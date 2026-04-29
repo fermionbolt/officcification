@@ -143,6 +143,9 @@ textarea.quick::placeholder{color:var(--text3)}
 
 /* MONTH SELECT */
 .month-row{display:flex;align-items:center;gap:10px}
+.ptr{position:relative;overflow:hidden}
+.ptr-indicator{position:absolute;top:-44px;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text3);transition:top .2s}
+.ptr-indicator.show{top:0}
 .month-row select{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;color:var(--text);font-family:var(--font);font-size:14px;outline:none}
 
 /* SCROLLBAR GIZLE MOBILE */
@@ -171,7 +174,8 @@ textarea.quick::placeholder{color:var(--text3)}
     <div class="tab" onclick="switchTab('rapor')">Rapor</div>
   </div>
 
-  <div class="content">
+  <div class="content" id="mainContent">
+<div class="ptr-indicator" id="ptrIndicator">↓ Yenile</div>
 
     <!-- GİRİŞ PANELİ -->
     <div class="panel active" id="panel-giris">
@@ -269,7 +273,10 @@ textarea.quick::placeholder{color:var(--text3)}
         </div>
       </div>
 
-      <button class="save-btn" onclick="addRecord()">Kaydet</button>
+      <div style="display:flex;gap:10px">
+        <button class="save-btn" onclick="addRecord()" style="flex:1">Kaydet</button>
+        <button class="save-btn" onclick="resetForm()" style="flex:0 0 auto;background:var(--surface2);color:var(--text2);border:1px solid var(--border2)">Sıfırla</button>
+      </div>
 
     </div>
 
@@ -400,11 +407,60 @@ async function syncToSheets(rec) {
 }
 
 // ── INIT ──────────────────────────────────────
+async function loadFromSheets() {
+  try {
+    showToast("Kayıtlar yükleniyor...");
+    const res = await fetch(SHEETS_URL + "?action=getAll&t=" + Date.now());
+    const data = await res.json();
+    if (data.records && data.records.length > 0) {
+      records = data.records;
+      localStorage.setItem("ceviri_v2", JSON.stringify(records));
+      renderRecords();
+      renderStats();
+      populateMonths();
+      showToast(data.records.length + " kayıt yüklendi");
+    } else {
+      showToast("Sheets boş veya bağlantı yok");
+    }
+  } catch(e) {
+    showToast("Yükleme başarısız");
+  }
+}
+
+function resetForm() {
+  if (!confirm("Formu sıfırlamak istiyor musunuz?")) return;
+  clearForm();
+  document.getElementById("quickInput").value = "";
+  showToast("Form sıfırlandı");
+}
+
+function setupPullToRefresh() {
+  const el = document.getElementById("mainContent");
+  let startY = 0, pulling = false;
+  const indicator = document.getElementById("ptrIndicator");
+  el.addEventListener("touchstart", e => { startY = e.touches[0].clientY; }, {passive:true});
+  el.addEventListener("touchmove", e => {
+    if (el.scrollTop === 0 && e.touches[0].clientY - startY > 60) {
+      pulling = true;
+      indicator.classList.add("show");
+    }
+  }, {passive:true});
+  el.addEventListener("touchend", () => {
+    if (pulling) {
+      pulling = false;
+      indicator.classList.remove("show");
+      loadFromSheets();
+    }
+  });
+}
+
 function init(){
   document.getElementById('f_tarih').value = today();
   populateMonths();
   renderRecords();
   renderStats();
+  setupPullToRefresh();
+  loadFromSheets();
 }
 
 function today(){
