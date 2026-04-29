@@ -749,9 +749,7 @@ function showToast(msg){
 }
 
 // ── SERVICE WORKER REGISTER ──────────────────────
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
-}
+// service worker disabled
 
 init();
 </script>
