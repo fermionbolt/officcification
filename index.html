@@ -373,6 +373,20 @@ textarea.quick::placeholder{color:var(--text3)}
 let records = JSON.parse(localStorage.getItem('ceviri_v2')||'[]');
 let activeFilter = 'tumu';
 let activeTab = 'giris';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx6jxc03S0DsKOBPDlTQDJvhhip52hzKmnXgEKNts--stOPu3p9ybLTL1WcJ8vqM3tFbg/exec';
+
+async function syncToSheets(rec) {
+  try {
+    await fetch(SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(rec)
+    });
+  } catch(e) {
+    console.warn('Sheets sync failed:', e);
+  }
+}
 
 // ── INIT ──────────────────────────────────────
 function init(){
@@ -502,7 +516,8 @@ function addRecord(){
   records.unshift(rec);
   save();
   clearForm();
-  showToast('Kaydedildi ✓');
+  showToast('Kaydedildi - Sheets'e gonderiliyor...');
+  syncToSheets(rec);
 }
 
 function deleteRecord(id){
