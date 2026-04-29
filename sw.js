@@ -1,10 +1,5 @@
-const CACHE = 'ceviri-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap'
-];
+const CACHE = 'ceviri-v3';
+const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -21,15 +16,8 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  if (e.request.url.includes('script.google.com')) return;
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(res => {
-        if (!res || res.status !== 200 || res.type === 'opaque') return res;
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-        return res;
-      }).catch(() => caches.match('./index.html'));
-    })
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
