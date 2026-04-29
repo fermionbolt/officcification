@@ -172,6 +172,7 @@ textarea.quick::placeholder{color:var(--text3)}
     <div class="tab active" onclick="switchTab('giris')">Kayıt Gir</div>
     <div class="tab" onclick="switchTab('liste')">İşlemler</div>
     <div class="tab" onclick="switchTab('rapor')">Rapor</div>
+    <div class="tab" onclick="switchTab('cari')">Cari</div>
   </div>
 
   <div class="content" id="mainContent">
@@ -226,6 +227,7 @@ textarea.quick::placeholder{color:var(--text3)}
               <option value="Banka / Havale">Banka / Havale</option>
               <option value="EFT">EFT</option>
               <option value="Kredi Kartı">Kredi Kartı</option>
+              <option value="Dekont Geldi">Dekont Geldi</option>
             </select>
           </div>
           <div class="field">
@@ -344,6 +346,11 @@ textarea.quick::placeholder{color:var(--text3)}
       </div>
 
       <div class="card">
+        <div class="card-title">Cari Özet</div>
+        <div id="cariSummary" style="display:flex;flex-direction:column;gap:8px"></div>
+      </div>
+
+      <div class="card">
         <div class="card-title">Dışa aktar</div>
         <div class="export-grid">
           <button class="exp-btn" onclick="exportCSV()">
@@ -369,6 +376,68 @@ textarea.quick::placeholder{color:var(--text3)}
         </div>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
       </div>
+    </div>
+
+  </div>
+
+    <!-- CARİ PANELİ -->
+    <div class="panel" id="panel-cari">
+
+      <div class="card">
+        <div class="card-title">Cari Seç</div>
+        <div class="filter-bar" id="cariTabs">
+          <button class="f-btn active" onclick="selectCari('Beşiktaş 30',this)">Beşiktaş 30</button>
+          <button class="f-btn" onclick="selectCari('Beşiktaş 28',this)">Beşiktaş 28</button>
+          <button class="f-btn" onclick="selectCari('Beşiktaş 14',this)">Beşiktaş 14</button>
+          <button class="f-btn" onclick="selectCari('Beyoğlu 28',this)">Beyoğlu 28</button>
+          <button class="f-btn" onclick="selectCari('Beşiktaş 27',this)">Beşiktaş 27</button>
+          <button class="f-btn" onclick="selectCari('Beşiktaş 3',this)">Beşiktaş 3</button>
+        </div>
+      </div>
+
+      <div class="card" id="cariFormCard" style="display:none">
+        <div class="card-title" id="cariFormTitle">Yeni İşlem</div>
+        <div class="fields">
+          <div class="field">
+            <label>Tarih</label>
+            <input type="date" id="c_tarih">
+          </div>
+          <div class="field">
+            <label>İşlem Adı</label>
+            <input type="text" id="c_islem" placeholder="Tercüme, apostil...">
+          </div>
+          <div class="field">
+            <label>Tutar (TL)</label>
+            <input type="number" id="c_tutar" placeholder="0" inputmode="decimal">
+          </div>
+          <div class="field">
+            <label>Ödeme Şekli</label>
+            <select id="c_odeme">
+              <option value="">Seçin</option>
+              <option value="Nakit / Elden">Nakit / Elden</option>
+              <option value="Banka / Havale">Banka / Havale</option>
+              <option value="EFT">EFT</option>
+              <option value="Kredi Kartı">Kredi Kartı</option>
+              <option value="Dekont Geldi">Dekont Geldi</option>
+              <option value="Ödenmedi">Ödenmedi</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Not</label>
+            <input type="text" id="c_not" placeholder="Ek bilgi">
+          </div>
+        </div>
+        <button class="save-btn" onclick="addCariRecord()" style="margin-top:12px">Kaydet</button>
+      </div>
+
+      <div class="card" id="cariListCard" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="card-title" style="margin:0" id="cariListTitle">İşlemler</div>
+          <div style="font-size:13px;color:var(--green);font-weight:600" id="cariTotal">0 ₺</div>
+        </div>
+        <div id="cariRecords"></div>
+      </div>
+
     </div>
 
   </div>
@@ -455,6 +524,91 @@ function setupPullToRefresh() {
   });
 }
 
+// ── CARİ ──────────────────────────────────────
+let cariRecords = JSON.parse(localStorage.getItem('ceviri_cari')||'[]');
+let activeCari = null;
+
+function selectCari(name, btn) {
+  activeCari = name;
+  document.querySelectorAll('#cariTabs .f-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cariFormCard').style.display = 'block';
+  document.getElementById('cariListCard').style.display = 'block';
+  document.getElementById('cariFormTitle').textContent = name + ' — Yeni İşlem';
+  document.getElementById('cariListTitle').textContent = name + ' — Geçmiş İşlemler';
+  document.getElementById('c_tarih').value = today();
+  renderCariRecords();
+}
+
+function addCariRecord() {
+  if (!activeCari) return;
+  const tutar = parseFloat(document.getElementById('c_tutar').value) || 0;
+  const islem = document.getElementById('c_islem').value.trim();
+  if (!islem && !tutar) { showToast('İşlem adı veya tutar gerekli!'); return; }
+  const rec = {
+    id: Date.now(),
+    cari: activeCari,
+    tarih: document.getElementById('c_tarih').value || today(),
+    islem: islem || '—',
+    tutar,
+    odeme: document.getElementById('c_odeme').value || '—',
+    not: document.getElementById('c_not').value.trim() || ''
+  };
+  cariRecords.unshift(rec);
+  localStorage.setItem('ceviri_cari', JSON.stringify(cariRecords));
+  ['c_islem','c_tutar','c_not'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('c_odeme').selectedIndex = 0;
+  document.getElementById('c_tarih').value = today();
+  renderCariRecords();
+  showToast('Cari kayıt eklendi ✓');
+}
+
+function deleteCariRecord(id) {
+  if (!confirm('Bu kaydı silmek istiyor musunuz?')) return;
+  cariRecords = cariRecords.filter(r => r.id !== id);
+  localStorage.setItem('ceviri_cari', JSON.stringify(cariRecords));
+  renderCariRecords();
+  showToast('Silindi');
+}
+
+function renderCariRecords() {
+  if (!activeCari) return;
+  const recs = cariRecords.filter(r => r.cari === activeCari);
+  const total = recs.reduce((s, r) => s + r.tutar, 0);
+  document.getElementById('cariTotal').textContent = total.toLocaleString('tr-TR') + ' ₺';
+  const c = document.getElementById('cariRecords');
+  if (!recs.length) {
+    c.innerHTML = '<div class="empty" style="padding:20px 0">Henüz kayıt yok</div>';
+    return;
+  }
+  c.innerHTML = recs.map(r => {
+    const odemeTag = r.odeme === 'Ödenmedi'
+      ? '<span class="tag faturasiz">Ödenmedi</span>'
+      : r.odeme !== '—' ? '<span class="tag nakit">' + r.odeme + '</span>' : '';
+    return `<div class="record" style="margin-bottom:8px">
+      <button class="rec-del" onclick="deleteCariRecord(${r.id})">×</button>
+      <div class="rec-top">
+        <div class="rec-main">
+          <div class="rec-name">${r.islem}</div>
+          <div class="rec-date">${r.tarih}</div>
+        </div>
+        <div class="rec-amount">${r.tutar ? r.tutar.toLocaleString('tr-TR') + ' ₺' : '—'}</div>
+      </div>
+      <div class="rec-tags">${odemeTag}</div>
+      ${r.not ? '<div class="rec-not">' + r.not + '</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function getCariStats() {
+  const CARILER = ['Beşiktaş 30','Beşiktaş 28','Beşiktaş 14','Beyoğlu 28','Beşiktaş 27','Beşiktaş 3'];
+  return CARILER.map(name => {
+    const recs = cariRecords.filter(r => r.cari === name);
+    const total = recs.reduce((s, r) => s + r.tutar, 0);
+    return { name, count: recs.length, total };
+  });
+}
+
 function init(){
   document.getElementById('f_tarih').value = today();
   populateMonths();
@@ -471,7 +625,7 @@ function today(){
 // ── TABS ──────────────────────────────────────
 function switchTab(tab){
   document.querySelectorAll('.tab').forEach((t,i)=>{
-    const tabs=['giris','liste','rapor'];
+    const tabs=['giris','liste','rapor','cari'];
     t.classList.toggle('active', tabs[i]===tab);
   });
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -706,6 +860,20 @@ function renderStats(){
   document.getElementById('s_faturasiz').textContent = recs.filter(r=>r.fatura==='Faturasız').length;
   document.getElementById('s_kasa').textContent = kasa.toLocaleString('tr-TR')+' ₺';
   document.getElementById('s_banka').textContent = banka.toLocaleString('tr-TR')+' ₺';
+
+  // Cari özet
+  const cariStats = getCariStats();
+  const cariEl = document.getElementById('cariSummary');
+  if (cariEl) {
+    cariEl.innerHTML = cariStats.map(c => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:var(--surface2);border-radius:var(--radius-sm)">
+        <div style="font-size:13px;color:var(--text)">${c.name}</div>
+        <div style="display:flex;gap:12px;font-size:12px">
+          <span style="color:var(--text3)">${c.count} işlem</span>
+          <span style="color:var(--green);font-weight:600;font-family:var(--mono)">${c.total.toLocaleString('tr-TR')} ₺</span>
+        </div>
+      </div>`).join('');
+  }
 }
 
 // ── EXPORTS ──────────────────────────────────────
