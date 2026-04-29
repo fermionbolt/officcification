@@ -260,9 +260,9 @@ textarea.quick::placeholder{color:var(--text3)}
             <label>Kaydeden</label>
             <select id="f_kaydeden">
               <option value="">Seçin (opsiyonel)</option>
-              <option value="Ortak 1">Ortak 1</option>
-              <option value="Ortak 2">Ortak 2</option>
-              <option value="Ortak 3">Ortak 3</option>
+              <option value="Eren">Eren</option>
+              <option value="Deniz">Deniz</option>
+              <option value="Sultan">Sultan</option>
               <option value="Yardımcı">Yardımcı</option>
             </select>
           </div>
@@ -587,6 +587,15 @@ function addRecord(){
   syncToSheets(rec);
 }
 
+function toggleDone(id, cb) {
+  const rec = records.find(r => r.id === id);
+  if (!rec) return;
+  rec.done = cb.checked;
+  save();
+  const card = cb.closest('.record');
+  if (card) card.classList.toggle('done', rec.done);
+}
+
 function deleteRecord(id){
   if(!confirm('Bu kaydı silmek istiyor musunuz?')) return;
   records = records.filter(r=>r.id!==id);
@@ -657,6 +666,10 @@ function renderRecords(){
       <div class="rec-tags">${fTag}${odTag}${kasaTag}${turTag}</div>
       ${extras.length?`<div class="rec-extras">${extras.join('')}</div>`:''}
       ${r.not?`<div class="rec-not">${r.not}</div>`:''}
+      <div class="rec-done">
+        <input type="checkbox" id="done_${r.id}" ${r.done?'checked':''} onchange="toggleDone(${r.id}, this)">
+        <label for="done_${r.id}">Tamamlandı / Fatura kesildi</label>
+      </div>
     </div>`;
   }).join('');
 }
