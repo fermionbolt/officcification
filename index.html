@@ -377,11 +377,22 @@ const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx6jxc03S0DsKOBPDlTQ
 
 async function syncToSheets(rec) {
   try {
-    await fetch(SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(rec)
+    const params = new URLSearchParams({
+      tarih: rec.tarih||'',
+      musteri: rec.musteri||'',
+      tutar: rec.tutar||0,
+      fatura: rec.fatura||'',
+      odeme: rec.odeme||'',
+      kasa: rec.kasa||'',
+      kurye: rec.kurye||0,
+      noter: rec.noter||0,
+      tur: rec.tur||'',
+      kaydeden: rec.kaydeden||'',
+      not: rec.not||''
+    });
+    await fetch(SHEETS_URL + '?' + params.toString(), {
+      method: 'GET',
+      mode: 'no-cors'
     });
   } catch(e) {
     console.warn('Sheets sync failed:', e);
