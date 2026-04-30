@@ -138,6 +138,15 @@ textarea.quick::placeholder{color:var(--text3)}
 .fatura-mini .fv{font-size:14px;font-weight:700;font-family:var(--mono)}
 .fatura-mini.f .fv{color:var(--accent2)}
 .fatura-mini.n .fv{color:var(--red)}
+
+/* EDIT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0}
+.modal{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:700px;padding:20px;max-height:85dvh;overflow-y:auto;animation:slideup .2s ease}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:none;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:0 4px}
+.edit-btn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;padding:3px 7px;transition:color .15s;border-radius:6px}
+.edit-btn:hover{color:var(--accent);background:rgba(192,132,252,.1)}
 @media(max-width:480px){
   .fields{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:1fr 1fr}
@@ -459,6 +468,59 @@ textarea.quick::placeholder{color:var(--text3)}
 
 </div>
 
+
+<!-- EDİT MODAL -->
+<div class="modal-overlay" id="editModal" style="display:none" onclick="closeEditModal(event)">
+  <div class="modal">
+    <div class="modal-title">
+      <span>Kaydı Düzenle</span>
+      <button class="modal-close" onclick="closeEditModalDirect()">×</button>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <label>Tarih</label>
+        <input type="date" id="e_tarih">
+      </div>
+      <div class="field">
+        <label>İşlem Adı</label>
+        <input type="text" id="e_islem" placeholder="Tercüme, apostil...">
+      </div>
+      <div class="field">
+        <label>Tutar (TL)</label>
+        <input type="number" id="e_tutar" placeholder="0" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label>Ödeme Şekli</label>
+        <select id="e_odeme">
+          <option value="">Seçin</option>
+          <option value="Nakit / Elden">Nakit / Elden</option>
+          <option value="Banka / Havale">Banka / Havale</option>
+          <option value="EFT">EFT</option>
+          <option value="Kredi Kartı">Kredi Kartı</option>
+          <option value="Dekont Geldi">Dekont Geldi</option>
+          <option value="Ödenmedi">Ödenmedi</option>
+          <option value="Ödeme Gelmedi">Ödeme Gelmedi</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Fatura</label>
+        <select id="e_fatura">
+          <option value="">Seçin</option>
+          <option value="Faturalı">Faturalı</option>
+          <option value="Faturasız">Faturasız</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label>Not</label>
+        <input type="text" id="e_not" placeholder="Ek bilgi">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="save-btn" onclick="saveEditCariRecord()" style="flex:1">Kaydet</button>
+      <button class="save-btn" onclick="closeEditModalDirect()" style="flex:0 0 auto;background:var(--surface2);color:var(--text2);border:1px solid var(--border2)">İptal</button>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -915,9 +977,13 @@ function renderCariRecords() {
     const fTag = r.fatura === 'Faturalı' ? '<span class="tag faturali">Faturalı</span>' :
                  r.fatura === 'Faturasız' ? '<span class="tag faturasiz">Faturasız</span>' : '';
     const odTag = r.odeme === 'Ödenmedi' ? '<span class="tag faturasiz">Ödenmedi</span>' :
+                  r.odeme === 'Ödeme Gelmedi' ? '<span class="tag faturasiz">Ödeme Gelmedi</span>' :
                   r.odeme !== '—' ? '<span class="tag nakit">'+r.odeme+'</span>' : '';
     return `<div class="record" style="margin-bottom:8px">
-      <button class="rec-del" onclick="deleteCariRecord(${r.id})">×</button>
+      <div style="position:absolute;top:10px;right:10px;display:flex;gap:4px">
+        <button class="edit-btn" onclick="openEditModal(${r.id})" title="Düzenle">✏️</button>
+        <button class="rec-del" onclick="deleteCariRecord(${r.id})">×</button>
+      </div>
       <div class="rec-top">
         <div class="rec-main">
           <div class="rec-name">${r.islem}</div>
@@ -1032,6 +1098,82 @@ function handleImport(e) {
 function dl(blob, name) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = name; a.click();
+}
+
+
+// ── EDİT CARİ KAYIT ───────────────────────────
+let editingCariId = null;
+
+function openEditModal(id) {
+  const rec = cariRecords.find(r => r.id === id);
+  if (!rec) return;
+  editingCariId = id;
+  document.getElementById('e_tarih').value = rec.tarih || '';
+  document.getElementById('e_islem').value = rec.islem || '';
+  document.getElementById('e_tutar').value = rec.tutar || '';
+  document.getElementById('e_not').value = rec.not || '';
+  // Ödeme seç
+  const odSel = document.getElementById('e_odeme');
+  for (let i = 0; i < odSel.options.length; i++) {
+    if (odSel.options[i].value === rec.odeme) { odSel.selectedIndex = i; break; }
+  }
+  // Fatura seç
+  const fatSel = document.getElementById('e_fatura');
+  for (let i = 0; i < fatSel.options.length; i++) {
+    if (fatSel.options[i].value === rec.fatura) { fatSel.selectedIndex = i; break; }
+  }
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal(e) {
+  if (e.target === document.getElementById('editModal')) closeEditModalDirect();
+}
+
+function closeEditModalDirect() {
+  document.getElementById('editModal').style.display = 'none';
+  editingCariId = null;
+}
+
+function saveEditCariRecord() {
+  if (!editingCariId) return;
+  const idx = cariRecords.findIndex(r => r.id === editingCariId);
+  if (idx === -1) return;
+
+  const updated = {
+    ...cariRecords[idx],
+    tarih: document.getElementById('e_tarih').value || cariRecords[idx].tarih,
+    islem: document.getElementById('e_islem').value.trim() || cariRecords[idx].islem,
+    tutar: parseFloat(document.getElementById('e_tutar').value) || cariRecords[idx].tutar,
+    odeme: document.getElementById('e_odeme').value || cariRecords[idx].odeme,
+    fatura: document.getElementById('e_fatura').value || cariRecords[idx].fatura,
+    not: document.getElementById('e_not').value.trim()
+  };
+
+  cariRecords[idx] = updated;
+  localStorage.setItem('ceviri_cari', JSON.stringify(cariRecords));
+  closeEditModalDirect();
+  renderCariRecords();
+  showToast('Kayıt güncellendi ✓ — Sheets güncelleniyor...');
+
+  // Sheets'e güncellemeyi gönder
+  syncEditToSheets(updated);
+}
+
+async function syncEditToSheets(rec) {
+  try {
+    const params = new URLSearchParams({
+      action: 'update',
+      id: rec.id,
+      cari: rec.cari,
+      tarih: rec.tarih || '',
+      islem: rec.islem || '',
+      tutar: rec.tutar || 0,
+      odeme: rec.odeme || '',
+      fatura: rec.fatura || '',
+      not: rec.not || ''
+    });
+    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+  } catch(e) { console.warn('Sheets update failed:', e); }
 }
 
 // ── TOAST ──────────────────────────────────────
