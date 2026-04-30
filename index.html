@@ -941,7 +941,7 @@ function addCariRecord() {
   ['c_odeme','c_fatura'].forEach(id => document.getElementById(id).selectedIndex = 0);
   document.getElementById('c_tarih').value = today();
   renderCariRecords();
-  showToast('Cari kayıt eklendi ✓ — Sheets'e gönderiliyor...');
+  showToast("Cari kayıt eklendi ✓ — Sheets'e gönderiliyor...");
   // Cari sekmesinden eklenen kaydı Sheets'e gönder
   syncCariToSheets(rec);
 }
