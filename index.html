@@ -235,6 +235,7 @@ textarea.quick::placeholder{color:var(--text3)}
               <option value="EFT">EFT</option>
               <option value="Kredi Kartı">Kredi Kartı</option>
               <option value="Dekont Geldi">Dekont Geldi</option>
+              <option value="Ödeme Gelmedi">Ödeme Gelmedi</option>
             </select>
           </div>
           <div class="field">
@@ -651,6 +652,23 @@ function addRecord() {
   };
   records.unshift(rec);
   save();
+
+  // Secilen musteri bilinen bir cariyse -> cari sekmesine de otomatik kaydet
+  if (CARILER.indexOf(rec.musteri) !== -1) {
+    const cariRec = {
+      id: rec.id + 1,
+      cari: rec.musteri,
+      tarih: rec.tarih,
+      islem: rec.tur || rec.not || 'Ana ekrandan kayit',
+      tutar: rec.tutar,
+      odeme: rec.odeme,
+      fatura: rec.fatura,
+      not: rec.not
+    };
+    cariRecords.unshift(cariRec);
+    localStorage.setItem('ceviri_cari', JSON.stringify(cariRecords));
+  }
+
   clearForm();
   showToast("Kaydedildi ✓ — Sheets'e gönderiliyor...");
   syncToSheets(rec);
