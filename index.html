@@ -570,7 +570,6 @@ function setMusteriSelect(value) {
 async function syncToSheets(rec) {
   try {
     const params = new URLSearchParams({
-      id: String(rec.id||''),
       tarih: rec.tarih||'', musteri: rec.musteri||'', tutar: rec.tutar||0,
       fatura: rec.fatura||'', odeme: rec.odeme||'', kasa: rec.kasa||'',
       kurye: rec.kurye||0, noter: rec.noter||0, tur: rec.tur||'',
@@ -621,7 +620,16 @@ function switchTab(tab) {
   const tabNames = ['giris','liste','rapor','cari'];
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabNames[i]===tab));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-'+tab).classList.add('active');
+  // panel-cari mainContent dışında olduğu için display ile yönet
+  const mainContent = document.getElementById('mainContent');
+  if (tab === 'cari') {
+    mainContent.style.display = 'none';
+    document.getElementById('panel-cari').style.display = 'flex';
+  } else {
+    mainContent.style.display = 'flex';
+    document.getElementById('panel-cari').style.display = 'none';
+    document.getElementById('panel-'+tab).classList.add('active');
+  }
   if (tab==='liste') renderRecords();
   if (tab==='rapor') { populateMonths(); renderStats(); }
 }
@@ -941,9 +949,7 @@ function addCariRecord() {
   ['c_odeme','c_fatura'].forEach(id => document.getElementById(id).selectedIndex = 0);
   document.getElementById('c_tarih').value = today();
   renderCariRecords();
-  showToast("Cari kayıt eklendi ✓ — Sheets'e gönderiliyor...");
-  // Cari sekmesinden eklenen kaydı Sheets'e gönder
-  syncCariToSheets(rec);
+  showToast('Cari kayıt eklendi ✓');
 }
 
 function deleteCariRecord(id) {
@@ -1152,22 +1158,21 @@ function saveEditCariRecord() {
     not: document.getElementById('e_not').value.trim()
   };
 
-  const eskiRec = {...cariRecords[idx]};
   cariRecords[idx] = updated;
   localStorage.setItem('ceviri_cari', JSON.stringify(cariRecords));
   closeEditModalDirect();
   renderCariRecords();
   showToast('Kayıt güncellendi ✓ — Sheets güncelleniyor...');
 
-  // Sheets'e güncellemeyi gönder (eski kayıtla birlikte)
-  syncEditToSheets(updated, eskiRec);
+  // Sheets'e güncellemeyi gönder
+  syncEditToSheets(updated);
 }
 
-async function syncCariToSheets(rec) {
+async function syncEditToSheets(rec) {
   try {
     const params = new URLSearchParams({
-      action: 'cari',
-      id: String(rec.id),
+      action: 'update',
+      id: rec.id,
       cari: rec.cari,
       tarih: rec.tarih || '',
       islem: rec.islem || '',
@@ -1175,28 +1180,6 @@ async function syncCariToSheets(rec) {
       odeme: rec.odeme || '',
       fatura: rec.fatura || '',
       not: rec.not || ''
-    });
-    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
-  } catch(e) { console.warn('Cari sheets sync failed:', e); }
-}
-
-async function syncEditToSheets(rec, eskiRec) {
-  try {
-    const params = new URLSearchParams({
-      action: 'update',
-      id: String(rec.id),
-      cari: rec.cari,
-      tarih: rec.tarih || '',
-      islem: rec.islem || '',
-      tutar: rec.tutar || 0,
-      odeme: rec.odeme || '',
-      fatura: rec.fatura || '',
-      not: rec.not || '',
-      // Eski değerler — eşleştirme için
-      tarih_eski: eskiRec.tarih || '',
-      islem_eski: eskiRec.islem || '',
-      tutar_eski: eskiRec.tutar || 0,
-      odeme_eski: eskiRec.odeme || ''
     });
     await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
   } catch(e) { console.warn('Sheets update failed:', e); }
