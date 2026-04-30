@@ -619,15 +619,15 @@ function setupPullToRefresh() {
 function switchTab(tab) {
   const tabNames = ['giris','liste','rapor','cari'];
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabNames[i]===tab));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  // panel-cari mainContent dışında olduğu için display ile yönet
   const mainContent = document.getElementById('mainContent');
+  const cariPanel = document.getElementById('panel-cari');
   if (tab === 'cari') {
     mainContent.style.display = 'none';
-    document.getElementById('panel-cari').style.display = 'flex';
+    cariPanel.style.display = 'flex';
   } else {
     mainContent.style.display = 'flex';
-    document.getElementById('panel-cari').style.display = 'none';
+    cariPanel.style.display = 'none';
+    document.querySelectorAll('#mainContent .panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-'+tab).classList.add('active');
   }
   if (tab==='liste') renderRecords();
