@@ -570,6 +570,7 @@ function setMusteriSelect(value) {
 async function syncToSheets(rec) {
   try {
     const params = new URLSearchParams({
+      id: String(rec.id||''),
       tarih: rec.tarih||'', musteri: rec.musteri||'', tutar: rec.tutar||0,
       fatura: rec.fatura||'', odeme: rec.odeme||'', kasa: rec.kasa||'',
       kurye: rec.kurye||0, noter: rec.noter||0, tur: rec.tur||'',
@@ -940,7 +941,9 @@ function addCariRecord() {
   ['c_odeme','c_fatura'].forEach(id => document.getElementById(id).selectedIndex = 0);
   document.getElementById('c_tarih').value = today();
   renderCariRecords();
-  showToast('Cari kayıt eklendi ✓');
+  showToast('Cari kayıt eklendi ✓ — Sheets'e gönderiliyor...');
+  // Cari sekmesinden eklenen kaydı Sheets'e gönder
+  syncCariToSheets(rec);
 }
 
 function deleteCariRecord(id) {
@@ -1149,21 +1152,22 @@ function saveEditCariRecord() {
     not: document.getElementById('e_not').value.trim()
   };
 
+  const eskiRec = {...cariRecords[idx]};
   cariRecords[idx] = updated;
   localStorage.setItem('ceviri_cari', JSON.stringify(cariRecords));
   closeEditModalDirect();
   renderCariRecords();
   showToast('Kayıt güncellendi ✓ — Sheets güncelleniyor...');
 
-  // Sheets'e güncellemeyi gönder
-  syncEditToSheets(updated);
+  // Sheets'e güncellemeyi gönder (eski kayıtla birlikte)
+  syncEditToSheets(updated, eskiRec);
 }
 
-async function syncEditToSheets(rec) {
+async function syncCariToSheets(rec) {
   try {
     const params = new URLSearchParams({
-      action: 'update',
-      id: rec.id,
+      action: 'cari',
+      id: String(rec.id),
       cari: rec.cari,
       tarih: rec.tarih || '',
       islem: rec.islem || '',
@@ -1171,6 +1175,28 @@ async function syncEditToSheets(rec) {
       odeme: rec.odeme || '',
       fatura: rec.fatura || '',
       not: rec.not || ''
+    });
+    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+  } catch(e) { console.warn('Cari sheets sync failed:', e); }
+}
+
+async function syncEditToSheets(rec, eskiRec) {
+  try {
+    const params = new URLSearchParams({
+      action: 'update',
+      id: String(rec.id),
+      cari: rec.cari,
+      tarih: rec.tarih || '',
+      islem: rec.islem || '',
+      tutar: rec.tutar || 0,
+      odeme: rec.odeme || '',
+      fatura: rec.fatura || '',
+      not: rec.not || '',
+      // Eski değerler — eşleştirme için
+      tarih_eski: eskiRec.tarih || '',
+      islem_eski: eskiRec.islem || '',
+      tutar_eski: eskiRec.tutar || 0,
+      odeme_eski: eskiRec.odeme || ''
     });
     await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
   } catch(e) { console.warn('Sheets update failed:', e); }
