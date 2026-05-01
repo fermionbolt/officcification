@@ -309,6 +309,7 @@ textarea.quick::placeholder{color:var(--text3)}
         <button class="f-btn" onclick="setFilter('nakit',this)">Nakit</button>
         <button class="f-btn" onclick="setFilter('banka',this)">Banka</button>
         <button class="f-btn" onclick="setFilter('bugun',this)">Bugün</button>
+        <button class="f-btn" onclick="clearAllRecords()" style="color:var(--red);border-color:rgba(248,113,113,.3)">Hepsini Temizle</button>
       </div>
       <div id="recordsContainer"></div>
     </div>
@@ -885,6 +886,13 @@ function clearForm() {
   ['f_musteri','f_fatura','f_odeme','f_kasa','f_tur','f_kaydeden'].forEach(id => document.getElementById(id).selectedIndex = 0);
   document.getElementById('f_musteri_serbest_wrap').style.display = 'none';
   document.getElementById('f_tarih').value = today();
+}
+
+function clearAllRecords() {
+  if (!confirm('Tüm kayıtlar silinecek. Bu işlem geri alınamaz. Emin misiniz?')) return;
+  records = [];
+  save(); renderRecords(); renderStats();
+  showToast('Tüm kayıtlar silindi');
 }
 
 function deleteRecord(id) {
