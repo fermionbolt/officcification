@@ -315,15 +315,66 @@ textarea.quick::placeholder{color:var(--text3)}
 
     <!-- RAPOR PANELİ -->
     <div class="panel" id="panel-rapor">
+
+      <!-- FİLTRELER -->
       <div class="card">
-        <div class="card-title">Dönem seç</div>
-        <div class="month-row">
-          <select id="monthFilter" onchange="renderStats()">
-            <option value="all">Tüm zamanlar</option>
-          </select>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="card-title" style="margin:0">Filtreler</div>
+          <button onclick="resetRaporFilters()" style="font-size:11px;padding:4px 12px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:999px;cursor:pointer;font-family:var(--font)">Sıfırla</button>
+        </div>
+        <div class="fields">
+          <div class="field">
+            <label>Başlangıç Tarihi</label>
+            <input type="date" id="r_tarih_bas" onchange="renderStats()">
+          </div>
+          <div class="field">
+            <label>Bitiş Tarihi</label>
+            <input type="date" id="r_tarih_bit" onchange="renderStats()">
+          </div>
+          <div class="field">
+            <label>Ay</label>
+            <select id="monthFilter" onchange="renderStats()">
+              <option value="all">Tüm zamanlar</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Fatura Durumu</label>
+            <select id="r_fatura" onchange="renderStats()">
+              <option value="all">Tümü</option>
+              <option value="Faturalı">Faturalı</option>
+              <option value="Faturasız">Faturasız</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Ödeme Durumu</label>
+            <select id="r_odeme" onchange="renderStats()">
+              <option value="all">Tümü</option>
+              <option value="Nakit / Elden">Nakit / Elden</option>
+              <option value="Banka / Havale">Banka / Havale</option>
+              <option value="EFT">EFT</option>
+              <option value="Dekont Geldi">Dekont Geldi</option>
+              <option value="Ödeme Gelmedi">Ödeme Gelmedi</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cari</label>
+            <select id="r_cari" onchange="renderStats()">
+              <option value="all">Tümü</option>
+              <option value="Beşiktaş 3">Beşiktaş 3</option>
+              <option value="Beşiktaş 14">Beşiktaş 14</option>
+              <option value="Beşiktaş 21">Beşiktaş 21</option>
+              <option value="Beşiktaş 25">Beşiktaş 25</option>
+              <option value="Beşiktaş 27">Beşiktaş 27</option>
+              <option value="Beşiktaş 30">Beşiktaş 30</option>
+              <option value="GLN">GLN</option>
+              <option value="Turunç Hukuk">Turunç Hukuk</option>
+              <option value="CMS Law">CMS Law</option>
+            </select>
+          </div>
         </div>
       </div>
 
+      <!-- ÖZET -->
       <div class="card">
         <div class="card-title">Özet</div>
         <div class="stats-grid">
@@ -362,11 +413,13 @@ textarea.quick::placeholder{color:var(--text3)}
         </div>
       </div>
 
+      <!-- CARİ ÖZET -->
       <div class="card">
         <div class="card-title">Cari Özet</div>
         <div id="cariSummary" style="display:flex;flex-direction:column;gap:8px"></div>
       </div>
 
+      <!-- DIŞA AKTAR -->
       <div class="card">
         <div class="card-title">Dışa aktar</div>
         <div class="export-grid">
@@ -909,6 +962,35 @@ function renderRecords() {
 // ── STATS ──────────────────────────────────────
 function getMonthKey(tarih) { return tarih.slice(0,7); }
 
+function getFilteredRaporRecords() {
+  const mf = document.getElementById('monthFilter')?.value || 'all';
+  const fatura = document.getElementById('r_fatura')?.value || 'all';
+  const odeme = document.getElementById('r_odeme')?.value || 'all';
+  const cari = document.getElementById('r_cari')?.value || 'all';
+  const basTarih = document.getElementById('r_tarih_bas')?.value || '';
+  const bitTarih = document.getElementById('r_tarih_bit')?.value || '';
+
+  return records.filter(r => {
+    if (mf !== 'all' && getMonthKey(r.tarih) !== mf) return false;
+    if (basTarih && r.tarih < basTarih) return false;
+    if (bitTarih && r.tarih > bitTarih) return false;
+    if (fatura !== 'all' && r.fatura !== fatura) return false;
+    if (odeme !== 'all' && r.odeme !== odeme) return false;
+    if (cari !== 'all' && r.musteri !== cari) return false;
+    return true;
+  });
+}
+
+function resetRaporFilters() {
+  document.getElementById('r_tarih_bas').value = '';
+  document.getElementById('r_tarih_bit').value = '';
+  document.getElementById('r_fatura').selectedIndex = 0;
+  document.getElementById('r_odeme').selectedIndex = 0;
+  document.getElementById('r_cari').selectedIndex = 0;
+  document.getElementById('monthFilter').value = 'all';
+  renderStats();
+}
+
 function populateMonths() {
   const sel = document.getElementById('monthFilter');
   const months = [...new Set(records.map(r => getMonthKey(r.tarih)))].sort().reverse();
@@ -941,8 +1023,7 @@ function getCariStats() {
 }
 
 function renderStats() {
-  const mf = document.getElementById('monthFilter').value;
-  const recs = mf==='all' ? records : records.filter(r => getMonthKey(r.tarih)===mf);
+  const recs = getFilteredRaporRecords();
   const gelir = recs.reduce((s,r) => s+r.tutar, 0);
   const gider = recs.reduce((s,r) => s+r.kurye+r.noter, 0);
   const kasa = recs.filter(r=>r.kasa==='Kasa').reduce((s,r)=>s+r.tutar,0);
@@ -1083,8 +1164,7 @@ function renderCariRecords() {
 
 // ── EXPORTS ───────────────────────────────────
 function getExportRecords() {
-  const mf = document.getElementById('monthFilter')?.value || 'all';
-  return mf==='all' ? records : records.filter(r => getMonthKey(r.tarih)===mf);
+  return getFilteredRaporRecords();
 }
 
 function exportCSV() {
