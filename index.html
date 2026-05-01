@@ -583,17 +583,35 @@ async function syncToSheets(rec) {
 
 async function loadFromSheets() {
   try {
-    const res = await fetch(SHEETS_URL + "?action=getAll&t=" + Date.now());
-    const data = await res.json();
-    if (data.records && data.records.length > 0) {
-      records = data.records;
+    const res = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5t5C6ix3W9OtwJ5scRmao1rZN7K2lGNsgsuUFkpOKutTy6xLTTz7wk7PrLI_31HlzafcXt_0iPy5-/pub?gid=1863200578&single=true&output=csv&t=' + Date.now());
+    const csv = await res.text();
+    const lines = csv.trim().split('\n');
+    if (lines.length < 2) { renderRecords(); renderStats(); populateMonths(); return; }
+    const parsed = lines.slice(1).map((line, i) => {
+      const cols = line.split(',');
+      return {
+        id: Date.now() + i,
+        tarih: cols[0] || '',
+        musteri: cols[1] || '',
+        tutar: parseFloat(cols[2]) || 0,
+        fatura: cols[3] || '',
+        odeme: cols[4] || '',
+        kasa: cols[5] || '',
+        kurye: parseFloat(cols[6]) || 0,
+        noter: parseFloat(cols[7]) || 0,
+        tur: cols[8] || '',
+        kaydeden: cols[9] || '',
+        not: (cols[10] || '').replace(/^"|"$/g, '')
+      };
+    }).filter(r => r.tutar > 0 || r.musteri);
+    if (parsed.length > 0) {
+      records = parsed;
       localStorage.setItem("ceviri_v2", JSON.stringify(records));
-      renderRecords(); renderStats(); populateMonths();
-      showToast(data.records.length + " kayıt yüklendi");
+      showToast(parsed.length + " kayıt yüklendi");
     }
-  } catch(e) { 
+    renderRecords(); renderStats(); populateMonths();
+  } catch(e) {
     console.warn("Sheets sync failed:", e);
-    // localStorage'daki verilerle devam et
     renderRecords(); renderStats(); populateMonths();
   }
 }
