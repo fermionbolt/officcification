@@ -1375,6 +1375,7 @@ function addGundem() {
   document.getElementById('g_atanan').selectedIndex = 0;
   renderGundem();
   showToast('Gündem maddesi eklendi ✓');
+  syncGundemToDocs();
 }
 
 function toggleGundemDone(id) {
@@ -1383,6 +1384,7 @@ function toggleGundemDone(id) {
   item.tamamlandi = !item.tamamlandi;
   saveGundem();
   renderGundem();
+  syncGundemToDocs();
 }
 
 function deleteGundem(id) {
@@ -1391,6 +1393,7 @@ function deleteGundem(id) {
   saveGundem();
   renderGundem();
   showToast('Silindi');
+  syncGundemToDocs();
 }
 
 function saveGundem() {
