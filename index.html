@@ -744,6 +744,11 @@ function parseInput() {
     'b27': 'Beşiktaş 27', 'b.27': 'Beşiktaş 27', 'b-27': 'Beşiktaş 27', 'b 27': 'Beşiktaş 27',
     'b28': 'Beşiktaş 28', 'b.28': 'Beşiktaş 28', 'b-28': 'Beşiktaş 28', 'b 28': 'Beşiktaş 28',
     'b30': 'Beşiktaş 30', 'b.30': 'Beşiktaş 30', 'b-30': 'Beşiktaş 30', 'b 30': 'Beşiktaş 30',
+    // bes kısaltmaları
+    'bes3': 'Beşiktaş 3', 'bes14': 'Beşiktaş 14', 'bes21': 'Beşiktaş 21',
+    'bes25': 'Beşiktaş 25', 'bes27': 'Beşiktaş 27', 'bes28': 'Beşiktaş 28', 'bes30': 'Beşiktaş 30',
+    'bes 3': 'Beşiktaş 3', 'bes 14': 'Beşiktaş 14', 'bes 21': 'Beşiktaş 21',
+    'bes 25': 'Beşiktaş 25', 'bes 27': 'Beşiktaş 27', 'bes 28': 'Beşiktaş 28', 'bes 30': 'Beşiktaş 30',
     // Beyoğlu kısaltmaları
     'bey28': 'Beyoğlu 28', 'bey.28': 'Beyoğlu 28', 'bey-28': 'Beyoğlu 28', 'bey 28': 'Beyoğlu 28',
     'by28': 'Beyoğlu 28', 'by.28': 'Beyoğlu 28', 'by-28': 'Beyoğlu 28', 'by 28': 'Beyoğlu 28',
@@ -752,8 +757,8 @@ function parseInput() {
   let cariFound = false;
   // Önce kısaltmaları dene
   for (const [kisaltma, cariAdi] of Object.entries(CARI_KISALTMA)) {
-    // kelime sınırıyla ara — örn "b30" ama "b305" değil
-    const regex = new RegExp('(^|\\s)' + kisaltma.replace('.', '\\.') + '(\\s|$)', 'i');
+    const escaped = kisaltma.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp('(?:^|\s)' + escaped + '(?:\s|$)', 'i');
     if (regex.test(lo)) {
       if (setMusteriSelect(cariAdi)) { cariFound = true; n++; break; }
     }
