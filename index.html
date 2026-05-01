@@ -494,6 +494,7 @@ textarea.quick::placeholder{color:var(--text3)}
           <div class="card-title" style="margin:0">Gündem Listesi</div>
           <div style="display:flex;gap:8px">
             <button onclick="renderGundem()" style="font-size:11px;padding:4px 12px;background:rgba(255,149,0,.15);border:1px solid rgba(255,149,0,.3);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font)">↻ Güncelle</button>
+            <button onclick="clearTamamlananGundem()" style="font-size:11px;padding:4px 12px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:999px;cursor:pointer;font-family:var(--font)">🗑 Tamamlananları Sil</button>
             <button onclick="syncGundemToDocs()" style="font-size:11px;padding:4px 12px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);color:var(--green);border-radius:999px;cursor:pointer;font-family:var(--font)">📄 Docs'a Kaydet</button>
           </div>
         </div>
@@ -1400,6 +1401,17 @@ function deleteGundem(id) {
   renderGundem();
   showToast('Silindi');
   syncGundemToDocs();
+}
+
+function clearTamamlananGundem() {
+  const tamamlanan = gundemItems.filter(i => i.tamamlandi).length;
+  if (!tamamlanan) { showToast('Tamamlanan madde yok'); return; }
+  if (!confirm(tamamlanan + ' tamamlanan madde silinecek. Emin misiniz?')) return;
+  gundemItems = gundemItems.filter(i => !i.tamamlandi);
+  saveGundem();
+  renderGundem();
+  syncGundemToDocs();
+  showToast('Tamamlananlar silindi');
 }
 
 function saveGundem() {
