@@ -589,7 +589,7 @@ let records = JSON.parse(localStorage.getItem('ceviri_v2')||'[]');
 let cariRecords = JSON.parse(localStorage.getItem('ceviri_cari')||'[]');
 let activeFilter = 'tumu';
 let activeCari = null;
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx6jxc03S0DsKOBPDlTQDJvhhip52hzKmnXgEKNts--stOPu3p9ybLTL1WcJ8vqM3tFbg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwxsFr8yADuln2eJsfMPox3jg9WO1QJvSkP_3Bp_uuELPNLkaoH_8k2qL9jYGU4HhD9Xg/exec';
 
 // ── MÜŞTERİ SEÇİMİ ────────────────────────────
 function onMusteriChange() {
@@ -1330,7 +1330,7 @@ function renderGundem() {
 }
 
 async function syncGundemToDocs() {
-  showToast('Docs'a gönderiliyor...');
+  showToast("Docs'a gönderiliyor...");
   try {
     const params = new URLSearchParams({
       action: 'gundem',
@@ -1338,7 +1338,7 @@ async function syncGundemToDocs() {
       gundem: JSON.stringify(gundemItems)
     });
     await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
-    showToast('Gündem Docs'a kaydedildi ✓');
+    showToast("Gündem Docs'a kaydedildi ✓");
   } catch(e) {
     showToast('Hata: ' + e.message);
   }
