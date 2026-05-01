@@ -612,11 +612,13 @@ let cariRecords = JSON.parse(localStorage.getItem('ceviri_cari')||'[]');
 let activeFilter = 'tumu';
 let activeCari = null;
 function pingSheets(url) {
-  const s = document.createElement('script');
-  s.src = url;
-  s.onerror = function() { new Image().src = url; };
-  document.head.appendChild(s);
-  setTimeout(() => { try { document.head.removeChild(s); } catch(e) {} }, 5000);
+  fetch(url, { method: 'GET', mode: 'no-cors', redirect: 'follow' })
+    .catch(() => {
+      const s = document.createElement('script');
+      s.src = url;
+      document.head.appendChild(s);
+      setTimeout(() => { try { document.head.removeChild(s); } catch(e) {} }, 5000);
+    });
 }
 
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx6jxc03S0DsKOBPDlTQDJvhhip52hzKmnXgEKNts--stOPu3p9ybLTL1WcJ8vqM3tFbg/exec';
