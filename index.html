@@ -625,15 +625,28 @@ function init() {
 
 function today() { return new Date().toISOString().split('T')[0]; }
 
-// Masaüstünde yatay scroll için mouse wheel desteği
+// Masaüstünde yatay scroll — wheel + drag desteği
 document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.filter-bar').forEach(function(el) {
+    // Mouse wheel
     el.addEventListener('wheel', function(e) {
-      if (e.deltaY !== 0) {
-        e.preventDefault();
-        el.scrollLeft += e.deltaY;
-      }
+      if (e.deltaY !== 0) { e.preventDefault(); el.scrollLeft += e.deltaY; }
     }, { passive: false });
+    // Drag to scroll
+    var isDown = false, startX, scrollLeft;
+    el.addEventListener('mousedown', function(e) {
+      isDown = true; el.style.cursor = 'grabbing';
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+    });
+    el.addEventListener('mouseleave', function() { isDown = false; el.style.cursor = ''; });
+    el.addEventListener('mouseup', function() { isDown = false; el.style.cursor = ''; });
+    el.addEventListener('mousemove', function(e) {
+      if (!isDown) return;
+      e.preventDefault();
+      var x = e.pageX - el.offsetLeft;
+      el.scrollLeft = scrollLeft - (x - startX);
+    });
   });
 });
 
@@ -659,6 +672,9 @@ function switchTab(tab) {
   if (tab==='liste') renderRecords();
   if (tab==='rapor') { populateMonths(); renderStats(); }
   if (tab==='gundem') renderGundem();
+  // Scroll to top on tab switch
+  const mc = document.getElementById('mainContent');
+  if (mc) mc.scrollTop = 0;
 }
 
 // ── PARSE ──────────────────────────────────────
