@@ -614,16 +614,15 @@ let activeCari = null;
 let _jsonpCount = 0;
 function pingSheets(url) {
   const cbName = '_cb' + (++_jsonpCount);
+  const s = document.createElement('script');
   window[cbName] = function(data) {
-    console.log('Sheets OK:', data);
     delete window[cbName];
     try { document.head.removeChild(s); } catch(e) {}
   };
-  const s = document.createElement('script');
   s.src = url + '&callback=' + cbName;
   s.onerror = function() {
     delete window[cbName];
-    console.warn('Sheets ping failed');
+    try { document.head.removeChild(s); } catch(e) {}
   };
   document.head.appendChild(s);
   setTimeout(() => {
