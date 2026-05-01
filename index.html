@@ -497,7 +497,7 @@ textarea.quick::placeholder{color:var(--text3)}
     <div class="panel" id="panel-cari" style="gap:14px">
 
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div class="card-title" style="margin:0">Cari Seç</div><button onclick="showAddCariModal()" title="Yeni Cari Ekle" style="flex-shrink:0;font-size:18px;width:32px;height:32px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:var(--accent);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div class="card-title" style="margin:0">Cari Seç</div><div style="display:flex;gap:6px"><button onclick="showAddCariModal()" title="Yeni Cari Ekle" style="flex-shrink:0;font-size:18px;width:32px;height:32px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:var(--accent);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button><button onclick="deleteCariTab()" title="Cari Sil" style="flex-shrink:0;font-size:16px;width:32px;height:32px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button></div></div>
       <div class="filter-bar" id="cariTabs">
         <button class="f-btn active" onclick="selectCari('Beşiktaş 3',this)">Beşiktaş 3</button>
         <button class="f-btn" onclick="selectCari('Beşiktaş 14',this)">Beşiktaş 14</button>
@@ -1333,6 +1333,19 @@ async function syncEditToSheets(rec) {
     });
     await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
   } catch(e) { console.warn('Sheets update failed:', e); }
+}
+
+function deleteCariTab() {
+  if (!activeCari) { showToast('Önce bir cari seçin'); return; }
+  if (!confirm(activeCari + ' silinecek. Emin misiniz?')) return;
+  CARILER = CARILER.filter(c => c !== activeCari);
+  localStorage.setItem('ceviri_cariler', JSON.stringify(CARILER));
+  cariRecords = cariRecords.filter(r => r.cari !== activeCari);
+  localStorage.setItem('ceviri_cari', JSON.stringify(cariRecords));
+  activeCari = null;
+  document.getElementById('cariListCard').style.display = 'none';
+  renderCariTabs();
+  showToast('Cari silindi');
 }
 
 function showAddCariModal() {
