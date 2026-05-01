@@ -302,6 +302,9 @@ textarea.quick::placeholder{color:var(--text3)}
 
     <!-- LİSTE PANELİ -->
     <div class="panel" id="panel-liste">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <button onclick="loadFromSheets()" style="font-size:12px;padding:5px 14px;background:rgba(255,149,0,.15);border:1px solid rgba(255,149,0,.3);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font)">↻ Güncelle</button>
+      </div>
       <div class="filter-bar">
         <button class="f-btn active" onclick="setFilter('tumu',this)">Tümü</button>
         <button class="f-btn" onclick="setFilter('faturali',this)">Faturalı</button>
@@ -489,7 +492,10 @@ textarea.quick::placeholder{color:var(--text3)}
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div class="card-title" style="margin:0">Gündem Listesi</div>
-          <button onclick="syncGundemToDocs()" style="font-size:11px;padding:4px 12px;background:rgba(255,149,0,.15);border:1px solid rgba(255,149,0,.3);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font)">📄 Docs'a Kaydet</button>
+          <div style="display:flex;gap:8px">
+            <button onclick="renderGundem()" style="font-size:11px;padding:4px 12px;background:rgba(255,149,0,.15);border:1px solid rgba(255,149,0,.3);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font)">↻ Güncelle</button>
+            <button onclick="syncGundemToDocs()" style="font-size:11px;padding:4px 12px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);color:var(--green);border-radius:999px;cursor:pointer;font-family:var(--font)">📄 Docs'a Kaydet</button>
+          </div>
         </div>
         <div class="filter-bar" style="margin-bottom:12px">
           <button class="f-btn active" onclick="setGundemFilter('tumu',this)">Tümü</button>
