@@ -651,7 +651,7 @@ async function syncToSheets(rec) {
       kurye: rec.kurye||0, noter: rec.noter||0, tur: rec.tur||'',
       kaydeden: rec.kaydeden||'', not: rec.not||''
     });
-    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    new Image().src = SHEETS_URL + '?' + params.toString();
   } catch(e) { console.warn('Sheets sync failed:', e); }
 }
 
@@ -1329,7 +1329,7 @@ async function syncEditToSheets(rec) {
       fatura: rec.fatura || '',
       not: rec.not || ''
     });
-    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    new Image().src = SHEETS_URL + '?' + params.toString();
   } catch(e) { console.warn('Sheets update failed:', e); }
 }
 
@@ -1468,7 +1468,7 @@ function renderGundem() {
 async function syncGundemToDocs() {
   try {
     const params = new URLSearchParams({ action: 'gundem', docsId: DOCS_ID, gundem: encodeURIComponent(JSON.stringify(gundemItems)) });
-    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    new Image().src = SHEETS_URL + '?' + params.toString();
   } catch(e) {}
 }
 
