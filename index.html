@@ -583,7 +583,6 @@ async function syncToSheets(rec) {
 
 async function loadFromSheets() {
   try {
-    showToast("Kayıtlar yükleniyor...");
     const res = await fetch(SHEETS_URL + "?action=getAll&t=" + Date.now());
     const data = await res.json();
     if (data.records && data.records.length > 0) {
@@ -591,8 +590,12 @@ async function loadFromSheets() {
       localStorage.setItem("ceviri_v2", JSON.stringify(records));
       renderRecords(); renderStats(); populateMonths();
       showToast(data.records.length + " kayıt yüklendi");
-    } else { showToast("Sheets boş veya bağlantı yok"); }
-  } catch(e) { showToast("Yükleme başarısız"); }
+    }
+  } catch(e) { 
+    console.warn("Sheets sync failed:", e);
+    // localStorage'daki verilerle devam et
+    renderRecords(); renderStats(); populateMonths();
+  }
 }
 
 // ── INIT ──────────────────────────────────────
