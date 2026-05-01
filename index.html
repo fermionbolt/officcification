@@ -611,14 +611,25 @@ let records = JSON.parse(localStorage.getItem('ceviri_v2')||'[]');
 let cariRecords = JSON.parse(localStorage.getItem('ceviri_cari')||'[]');
 let activeFilter = 'tumu';
 let activeCari = null;
+let _jsonpCount = 0;
 function pingSheets(url) {
-  fetch(url, { method: 'GET', mode: 'no-cors', redirect: 'follow' })
-    .catch(() => {
-      const s = document.createElement('script');
-      s.src = url;
-      document.head.appendChild(s);
-      setTimeout(() => { try { document.head.removeChild(s); } catch(e) {} }, 5000);
-    });
+  const cbName = '_cb' + (++_jsonpCount);
+  window[cbName] = function(data) {
+    console.log('Sheets OK:', data);
+    delete window[cbName];
+    try { document.head.removeChild(s); } catch(e) {}
+  };
+  const s = document.createElement('script');
+  s.src = url + '&callback=' + cbName;
+  s.onerror = function() {
+    delete window[cbName];
+    console.warn('Sheets ping failed');
+  };
+  document.head.appendChild(s);
+  setTimeout(() => {
+    delete window[cbName];
+    try { document.head.removeChild(s); } catch(e) {}
+  }, 10000);
 }
 
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx6jxc03S0DsKOBPDlTQDJvhhip52hzKmnXgEKNts--stOPu3p9ybLTL1WcJ8vqM3tFbg/exec';
