@@ -170,6 +170,7 @@ textarea.quick::placeholder{color:var(--text3)}
     <div class="tab" onclick="switchTab('liste')">İşlemler</div>
     <div class="tab" onclick="switchTab('rapor')">Rapor</div>
     <div class="tab" onclick="switchTab('cari')">Cari</div>
+    <div class="tab" onclick="switchTab('gundem')">Gündem</div>
   </div>
 
   <div class="content" id="mainContent">
@@ -391,6 +392,59 @@ textarea.quick::placeholder{color:var(--text3)}
           </button>
         </div>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+      </div>
+    </div>
+
+    <!-- GÜNDEM PANELİ -->
+    <div class="panel" id="panel-gundem">
+      <div class="card">
+        <div class="card-title">Yeni Madde</div>
+        <div class="fields">
+          <div class="field full">
+            <label>Başlık</label>
+            <input type="text" id="g_baslik" placeholder="Gündem maddesi...">
+          </div>
+          <div class="field full">
+            <label>Açıklama / Not</label>
+            <textarea id="g_not" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font);font-size:14px;color:var(--text);outline:none;width:100%;resize:none;min-height:80px;" placeholder="Detay, not..."></textarea>
+          </div>
+          <div class="field">
+            <label>Kategori</label>
+            <select id="g_kategori">
+              <option value="">Seçin</option>
+              <option value="Yapılacak">Yapılacak</option>
+              <option value="Toplantı Notu">Toplantı Notu</option>
+              <option value="Acil">Acil</option>
+              <option value="Genel">Genel</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Atanan</label>
+            <select id="g_atanan">
+              <option value="">Seçin</option>
+              <option value="Eren">Eren</option>
+              <option value="Deniz">Deniz</option>
+              <option value="Sultan">Sultan</option>
+              <option value="Tüm Ekip">Tüm Ekip</option>
+            </select>
+          </div>
+        </div>
+        <button class="save-btn" onclick="addGundem()" style="margin-top:12px">Ekle</button>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="card-title" style="margin:0">Gündem Listesi</div>
+          <button onclick="syncGundemToDocs()" style="font-size:11px;padding:4px 12px;background:rgba(255,149,0,.15);border:1px solid rgba(255,149,0,.3);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font)">📄 Docs'a Kaydet</button>
+        </div>
+        <div class="filter-bar" style="margin-bottom:12px">
+          <button class="f-btn active" onclick="setGundemFilter('tumu',this)">Tümü</button>
+          <button class="f-btn" onclick="setGundemFilter('yapilacak',this)">Yapılacak</button>
+          <button class="f-btn" onclick="setGundemFilter('toplanti',this)">Toplantı</button>
+          <button class="f-btn" onclick="setGundemFilter('acil',this)">Acil</button>
+          <button class="f-btn" onclick="setGundemFilter('tamamlandi',this)">Tamamlandı</button>
+        </div>
+        <div id="gundemContainer"></div>
       </div>
     </div>
 
@@ -1175,6 +1229,119 @@ async function syncEditToSheets(rec) {
     });
     await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
   } catch(e) { console.warn('Sheets update failed:', e); }
+}
+
+
+// ── GÜNDEM ─────────────────────────────────────
+const DOCS_ID = '1ws6dfIkixcNYvXy5rP_qWWlW-jVrVtfX8QMiO78JnFI';
+let gundemItems = JSON.parse(localStorage.getItem('ceviri_gundem') || '[]');
+let gundemFilter = 'tumu';
+
+function addGundem() {
+  const baslik = document.getElementById('g_baslik').value.trim();
+  if (!baslik) { showToast('Başlık gerekli!'); return; }
+  const item = {
+    id: Date.now(),
+    baslik,
+    not: document.getElementById('g_not').value.trim(),
+    kategori: document.getElementById('g_kategori').value || 'Genel',
+    atanan: document.getElementById('g_atanan').value || '',
+    tarih: today(),
+    tamamlandi: false
+  };
+  gundemItems.unshift(item);
+  saveGundem();
+  document.getElementById('g_baslik').value = '';
+  document.getElementById('g_not').value = '';
+  document.getElementById('g_kategori').selectedIndex = 0;
+  document.getElementById('g_atanan').selectedIndex = 0;
+  renderGundem();
+  showToast('Gündem maddesi eklendi ✓');
+}
+
+function toggleGundemDone(id) {
+  const item = gundemItems.find(i => i.id === id);
+  if (!item) return;
+  item.tamamlandi = !item.tamamlandi;
+  saveGundem();
+  renderGundem();
+}
+
+function deleteGundem(id) {
+  if (!confirm('Bu maddeyi silmek istiyor musunuz?')) return;
+  gundemItems = gundemItems.filter(i => i.id !== id);
+  saveGundem();
+  renderGundem();
+  showToast('Silindi');
+}
+
+function saveGundem() {
+  localStorage.setItem('ceviri_gundem', JSON.stringify(gundemItems));
+}
+
+function setGundemFilter(f, btn) {
+  gundemFilter = f;
+  document.querySelectorAll('#panel-gundem .f-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGundem();
+}
+
+function renderGundem() {
+  const items = gundemItems.filter(i => {
+    if (gundemFilter === 'yapilacak') return i.kategori === 'Yapılacak' && !i.tamamlandi;
+    if (gundemFilter === 'toplanti') return i.kategori === 'Toplantı Notu';
+    if (gundemFilter === 'acil') return i.kategori === 'Acil' && !i.tamamlandi;
+    if (gundemFilter === 'tamamlandi') return i.tamamlandi;
+    return true;
+  });
+
+  const c = document.getElementById('gundemContainer');
+  if (!items.length) {
+    c.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>Gündem boş</div>';
+    return;
+  }
+
+  const katRenk = {
+    'Yapılacak': 'rgba(255,149,0,.15);border-color:rgba(255,149,0,.3);color:var(--accent)',
+    'Toplantı Notu': 'rgba(52,211,153,.12);border-color:rgba(52,211,153,.2);color:var(--green)',
+    'Acil': 'rgba(248,113,113,.12);border-color:rgba(248,113,113,.2);color:var(--red)',
+    'Genel': 'var(--surface3);color:var(--text2)'
+  };
+
+  c.innerHTML = items.map(item => {
+    const renk = katRenk[item.kategori] || katRenk['Genel'];
+    return `<div class="record" style="margin-bottom:8px;${item.tamamlandi ? 'opacity:0.5' : ''}">
+      <div style="position:absolute;top:10px;right:10px;display:flex;gap:6px">
+        <button onclick="toggleGundemDone(${item.id})" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);color:var(--green);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:var(--font)">${item.tamamlandi ? '↩ Geri Al' : '✓ Tamam'}</button>
+        <button onclick="deleteGundem(${item.id})" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:var(--font)">Sil</button>
+      </div>
+      <div class="rec-top">
+        <div class="rec-main">
+          <div class="rec-name" style="${item.tamamlandi ? 'text-decoration:line-through' : ''}">${item.baslik}</div>
+          <div class="rec-date">${item.tarih}${item.atanan ? ' · ' + item.atanan : ''}</div>
+        </div>
+      </div>
+      <div class="rec-tags">
+        <span class="tag" style="background:${renk}">${item.kategori}</span>
+      </div>
+      ${item.not ? '<div class="rec-not">' + item.not + '</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+async function syncGundemToDocs() {
+  showToast('Docs'a gönderiliyor...');
+  try {
+    const params = new URLSearchParams({
+      action: 'gundem',
+      docsId: DOCS_ID,
+      gundem: JSON.stringify(gundemItems)
+    });
+    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    showToast('Gündem Docs'a kaydedildi ✓');
+  } catch(e) {
+    showToast('Hata: ' + e.message);
+  }
 }
 
 // ── TOAST ──────────────────────────────────────
