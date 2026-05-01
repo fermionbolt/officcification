@@ -496,11 +496,11 @@ textarea.quick::placeholder{color:var(--text3)}
   <!-- CARİ PANELİ — content dışında, app içinde -->
   <div class="panel" id="panel-cari" style="flex:1;overflow-y:auto;padding:16px;gap:14px">
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-        <div class="card-title" style="margin:0">Cari Seç</div>
-        <button onclick="showAddCariModal()" style="font-size:18px;width:32px;height:32px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:var(--accent);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">+</button>
-      </div>
-      <div class="filter-bar" id="cariTabs">
+      <div class="card-title">Cari Seç</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="filter-bar" id="cariTabs" style="flex:1;min-width:0">
+        </div>
+        <button onclick="showAddCariModal()" title="Yeni Cari Ekle" style="flex-shrink:0;font-size:18px;width:32px;height:32px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:var(--accent);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">+</button>
       </div>
     </div>
 
