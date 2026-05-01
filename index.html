@@ -413,6 +413,49 @@ textarea.quick::placeholder{color:var(--text3)}
       </div>
     </div>
 
+    <div class="card" id="cariFormCard" style="display:none">
+      <div class="card-title" id="cariFormTitle">Yeni İşlem</div>
+      <div class="fields">
+        <div class="field">
+          <label>Tarih</label>
+          <input type="date" id="c_tarih">
+        </div>
+        <div class="field">
+          <label>İşlem Adı</label>
+          <input type="text" id="c_islem" placeholder="Tercüme, apostil...">
+        </div>
+        <div class="field">
+          <label>Tutar (TL)</label>
+          <input type="number" id="c_tutar" placeholder="0" inputmode="decimal">
+        </div>
+        <div class="field">
+          <label>Ödeme Şekli</label>
+          <select id="c_odeme">
+            <option value="">Seçin</option>
+            <option value="Nakit / Elden">Nakit / Elden</option>
+            <option value="Banka / Havale">Banka / Havale</option>
+            <option value="EFT">EFT</option>
+            <option value="Kredi Kartı">Kredi Kartı</option>
+            <option value="Dekont Geldi">Dekont Geldi</option>
+            <option value="Ödenmedi">Ödenmedi</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Fatura</label>
+          <select id="c_fatura">
+            <option value="">Seçin</option>
+            <option value="Faturalı">Faturalı</option>
+            <option value="Faturasız">Faturasız</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Not</label>
+          <input type="text" id="c_not" placeholder="Ek bilgi">
+        </div>
+      </div>
+      <button class="save-btn" onclick="addCariRecord()" style="margin-top:12px">Kaydet</button>
+    </div>
+
     <div class="card" id="cariListCard" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <div class="card-title" style="margin:0" id="cariListTitle">İşlemler</div>
@@ -492,7 +535,7 @@ let records = JSON.parse(localStorage.getItem('ceviri_v2')||'[]');
 let cariRecords = JSON.parse(localStorage.getItem('ceviri_cari')||'[]');
 let activeFilter = 'tumu';
 let activeCari = null;
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwxsFr8yADuln2eJsfMPox3jg9WO1QJvSkP_3Bp_uuELPNLkaoH_8k2qL9jYGU4HhD9Xg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx6jxc03S0DsKOBPDlTQDJvhhip52hzKmnXgEKNts--stOPu3p9ybLTL1WcJ8vqM3tFbg/exec';
 
 // ── MÜŞTERİ SEÇİMİ ────────────────────────────
 function onMusteriChange() {
@@ -868,8 +911,11 @@ function selectCari(name, btn) {
   activeCari = name;
   document.querySelectorAll('#cariTabs .f-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  document.getElementById('cariFormCard').style.display = 'block';
   document.getElementById('cariListCard').style.display = 'block';
-  document.getElementById('cariListTitle').textContent = name + ' — İşlemler';
+  document.getElementById('cariFormTitle').textContent = name + ' — Yeni İşlem';
+  document.getElementById('cariListTitle').textContent = name + ' — Geçmiş İşlemler';
+  document.getElementById('c_tarih').value = today();
   renderCariRecords();
 }
 
@@ -934,9 +980,9 @@ function renderCariRecords() {
                   r.odeme === 'Ödeme Gelmedi' ? '<span class="tag faturasiz">Ödeme Gelmedi</span>' :
                   r.odeme !== '—' ? '<span class="tag nakit">'+r.odeme+'</span>' : '';
     return `<div class="record" style="margin-bottom:8px">
-      <div style="position:absolute;top:10px;right:10px;display:flex;gap:6px">
-        <button onclick="openEditModal(${r.id})" title="Düzenle" style="background:rgba(129,140,248,.15);border:1px solid rgba(129,140,248,.3);color:var(--accent2);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:13px;font-family:var(--font)">Düzenle</button>
-        <button onclick="deleteCariRecord(${r.id})" title="Sil" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:13px;font-family:var(--font)">Sil</button>
+      <div style="position:absolute;top:10px;right:10px;display:flex;gap:4px">
+        <button class="edit-btn" onclick="openEditModal(${r.id})" title="Düzenle">✏️</button>
+        <button class="rec-del" onclick="deleteCariRecord(${r.id})">×</button>
       </div>
       <div class="rec-top">
         <div class="rec-main">
@@ -1093,6 +1139,7 @@ function saveEditCariRecord() {
   const idx = cariRecords.findIndex(r => r.id === editingCariId);
   if (idx === -1) return;
 
+  const eskiRec = {...cariRecords[idx]};
   const updated = {
     ...cariRecords[idx],
     tarih: document.getElementById('e_tarih').value || cariRecords[idx].tarih,
@@ -1109,25 +1156,22 @@ function saveEditCariRecord() {
   renderCariRecords();
   showToast('Kayıt güncellendi ✓ — Sheets güncelleniyor...');
 
-  const eskiRec = cariRecords[idx] ? {...cariRecords[idx]} : updated;
   // Sheets'e güncellemeyi gönder
-  syncEditToSheets(updated, eskiRec);
+  syncEditToSheets(updated);
 }
 
-async function syncEditToSheets(rec, eskiRec) {
+async function syncEditToSheets(rec) {
   try {
     const params = new URLSearchParams({
       action: 'update',
-      id: String(rec.id),
+      id: rec.id,
       cari: rec.cari,
       tarih: rec.tarih || '',
       islem: rec.islem || '',
       tutar: rec.tutar || 0,
       odeme: rec.odeme || '',
       fatura: rec.fatura || '',
-      not: rec.not || '',
-      islem_eski: (eskiRec && eskiRec.islem) || '',
-      tutar_eski: (eskiRec && eskiRec.tutar) || 0
+      not: rec.not || ''
     });
     await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
   } catch(e) { console.warn('Sheets update failed:', e); }
