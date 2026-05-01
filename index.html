@@ -204,16 +204,7 @@ textarea.quick::placeholder{color:var(--text3)}
             <label>Müşteri / Kurum (Cari)</label>
             <select id="f_musteri" onchange="onMusteriChange()">
               <option value="">Seçin</option>
-              <optgroup label="Cariler">
-                <option value="Beşiktaş 3">Beşiktaş 3</option>
-                <option value="Beşiktaş 14">Beşiktaş 14</option>
-                <option value="Beşiktaş 21">Beşiktaş 21</option>
-                <option value="Beşiktaş 25">Beşiktaş 25</option>
-                <option value="Beşiktaş 27">Beşiktaş 27</option>
-                <option value="Beşiktaş 30">Beşiktaş 30</option>
-                <option value="GLN">GLN</option>
-                <option value="Turunç Hukuk">Turunç Hukuk</option>
-                <option value="CMS Law">CMS Law</option>
+              <optgroup label="Cariler" id="cariOptgroup">
               </optgroup>
               <optgroup label="Diğer">
                 <option value="__diger__">Diğer (elle gir)</option>
@@ -364,15 +355,6 @@ textarea.quick::placeholder{color:var(--text3)}
             <label>Cari</label>
             <select id="r_cari" onchange="renderStats()">
               <option value="all">Tümü</option>
-              <option value="Beşiktaş 3">Beşiktaş 3</option>
-              <option value="Beşiktaş 14">Beşiktaş 14</option>
-              <option value="Beşiktaş 21">Beşiktaş 21</option>
-              <option value="Beşiktaş 25">Beşiktaş 25</option>
-              <option value="Beşiktaş 27">Beşiktaş 27</option>
-              <option value="Beşiktaş 30">Beşiktaş 30</option>
-              <option value="GLN">GLN</option>
-              <option value="Turunç Hukuk">Turunç Hukuk</option>
-              <option value="CMS Law">CMS Law</option>
             </select>
           </div>
         </div>
@@ -514,17 +496,11 @@ textarea.quick::placeholder{color:var(--text3)}
   <!-- CARİ PANELİ — content dışında, app içinde -->
   <div class="panel" id="panel-cari" style="flex:1;overflow-y:auto;padding:16px;gap:14px">
     <div class="card">
-      <div class="card-title">Cari Seç</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="card-title" style="margin:0">Cari Seç</div>
+        <button onclick="showAddCariModal()" style="font-size:18px;width:32px;height:32px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:var(--accent);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">+</button>
+      </div>
       <div class="filter-bar" id="cariTabs">
-        <button class="f-btn active" onclick="selectCari('Beşiktaş 3',this)">Beşiktaş 3</button>
-        <button class="f-btn" onclick="selectCari('Beşiktaş 14',this)">Beşiktaş 14</button>
-        <button class="f-btn" onclick="selectCari('Beşiktaş 21',this)">Beşiktaş 21</button>
-        <button class="f-btn" onclick="selectCari('Beşiktaş 25',this)">Beşiktaş 25</button>
-        <button class="f-btn" onclick="selectCari('Beşiktaş 27',this)">Beşiktaş 27</button>
-        <button class="f-btn" onclick="selectCari('Beşiktaş 30',this)">Beşiktaş 30</button>
-        <button class="f-btn" onclick="selectCari('GLN',this)">GLN</button>
-        <button class="f-btn" onclick="selectCari('Turunç Hukuk',this)">Turunç Hukuk</button>
-        <button class="f-btn" onclick="selectCari('CMS Law',this)">CMS Law</button>
       </div>
     </div>
 
@@ -584,6 +560,26 @@ textarea.quick::placeholder{color:var(--text3)}
 </div>
 
 
+<!-- CARİ EKLE MODAL -->
+<div class="modal-overlay" id="addCariModal" style="display:none" onclick="closeAddCariModal(event)">
+  <div class="modal">
+    <div class="modal-title">
+      <span>Yeni Cari Ekle</span>
+      <button class="modal-close" onclick="closeAddCariModal()">×</button>
+    </div>
+    <div class="fields">
+      <div class="field full">
+        <label>Cari Adı</label>
+        <input type="text" id="new_cari_name" placeholder="Örn: Beşiktaş 35, ABC Hukuk...">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="save-btn" onclick="addNewCari()" style="flex:1">Ekle</button>
+      <button class="save-btn" onclick="closeAddCariModal()" style="flex:0 0 auto;background:var(--surface2);color:var(--text2);border:1px solid var(--border2)">İptal</button>
+    </div>
+  </div>
+</div>
+
 <!-- EDİT MODAL -->
 <div class="modal-overlay" id="editModal" style="display:none" onclick="closeEditModal(event)">
   <div class="modal">
@@ -640,10 +636,11 @@ textarea.quick::placeholder{color:var(--text3)}
 
 <script>
 // ── CARİ LİSTESİ ──────────────────────────────
-const CARILER = [
+const CARILER_DEFAULT = [
   'Beşiktaş 3','Beşiktaş 14','Beşiktaş 21','Beşiktaş 25',
   'Beşiktaş 27','Beşiktaş 30','GLN','Turunç Hukuk','CMS Law'
 ];
+let CARILER = JSON.parse(localStorage.getItem('ceviri_cariler') || JSON.stringify(CARILER_DEFAULT));
 
 // ── STATE ──────────────────────────────────────
 let records = JSON.parse(localStorage.getItem('ceviri_v2')||'[]');
@@ -711,8 +708,66 @@ async function loadFromSheets() {
 // ── INIT ──────────────────────────────────────
 function init() {
   document.getElementById('f_tarih').value = today();
+  renderCariTabs();
+  renderCariDropdowns();
   populateMonths(); renderRecords(); renderStats();
   setupPullToRefresh(); loadFromSheets();
+}
+
+function renderCariTabs() {
+  const tabsEl = document.getElementById('cariTabs');
+  if (!tabsEl) return;
+  tabsEl.innerHTML = CARILER.map((c, i) =>
+    `<button class="f-btn${i===0?' active':''}" onclick="selectCari('${c}',this)">${c}</button>`
+  ).join('');
+}
+
+function renderCariDropdowns() {
+  // Kayıt Gir dropdown
+  const og = document.getElementById('cariOptgroup');
+  if (og) {
+    og.innerHTML = CARILER.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+  // Rapor dropdown
+  const rCari = document.getElementById('r_cari');
+  if (rCari) {
+    rCari.innerHTML = '<option value="all">Tümü</option>' +
+      CARILER.map(c => `<option value="${c}">${c}</option>`).join('');
+  }
+}
+
+function showAddCariModal() {
+  document.getElementById('new_cari_name').value = '';
+  document.getElementById('addCariModal').style.display = 'flex';
+}
+
+function closeAddCariModal(e) {
+  if (e && e.target !== document.getElementById('addCariModal')) return;
+  document.getElementById('addCariModal').style.display = 'none';
+}
+
+function addNewCari() {
+  const name = document.getElementById('new_cari_name').value.trim();
+  if (!name) { showToast('Cari adı gerekli!'); return; }
+  if (CARILER.includes(name)) { showToast('Bu cari zaten var!'); return; }
+  CARILER.push(name);
+  localStorage.setItem('ceviri_cariler', JSON.stringify(CARILER));
+  renderCariTabs();
+  renderCariDropdowns();
+  document.getElementById('addCariModal').style.display = 'none';
+  showToast(name + ' eklendi ✓ — Sheets'e gönderiliyor...');
+  // Sheets'te de yeni sekme oluştur
+  syncNewCariToSheets(name);
+}
+
+async function syncNewCariToSheets(name) {
+  try {
+    const params = new URLSearchParams({
+      action: 'newcari',
+      cari: name
+    });
+    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+  } catch(e) { console.warn('New cari sheets sync failed:', e); }
 }
 
 function today() { return new Date().toISOString().split('T')[0]; }
