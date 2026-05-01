@@ -734,11 +734,36 @@ function parseInput() {
     n++;
   }
 
-  // Cari otomatik algıla (büyük/küçük harf duyarsız)
+  // Cari otomatik algıla — tam isim veya kısaltma
+  const CARI_KISALTMA = {
+    // Beşiktaş kısaltmaları
+    'b3': 'Beşiktaş 3', 'b.3': 'Beşiktaş 3', 'b-3': 'Beşiktaş 3', 'b 3': 'Beşiktaş 3',
+    'b14': 'Beşiktaş 14', 'b.14': 'Beşiktaş 14', 'b-14': 'Beşiktaş 14', 'b 14': 'Beşiktaş 14',
+    'b21': 'Beşiktaş 21', 'b.21': 'Beşiktaş 21', 'b-21': 'Beşiktaş 21', 'b 21': 'Beşiktaş 21',
+    'b25': 'Beşiktaş 25', 'b.25': 'Beşiktaş 25', 'b-25': 'Beşiktaş 25', 'b 25': 'Beşiktaş 25',
+    'b27': 'Beşiktaş 27', 'b.27': 'Beşiktaş 27', 'b-27': 'Beşiktaş 27', 'b 27': 'Beşiktaş 27',
+    'b28': 'Beşiktaş 28', 'b.28': 'Beşiktaş 28', 'b-28': 'Beşiktaş 28', 'b 28': 'Beşiktaş 28',
+    'b30': 'Beşiktaş 30', 'b.30': 'Beşiktaş 30', 'b-30': 'Beşiktaş 30', 'b 30': 'Beşiktaş 30',
+    // Beyoğlu kısaltmaları
+    'bey28': 'Beyoğlu 28', 'bey.28': 'Beyoğlu 28', 'bey-28': 'Beyoğlu 28', 'bey 28': 'Beyoğlu 28',
+    'by28': 'Beyoğlu 28', 'by.28': 'Beyoğlu 28', 'by-28': 'Beyoğlu 28', 'by 28': 'Beyoğlu 28',
+  };
+
   let cariFound = false;
-  for (const c of CARILER) {
-    if (lo.includes(c.toLowerCase())) {
-      if (setMusteriSelect(c)) { cariFound = true; n++; break; }
+  // Önce kısaltmaları dene
+  for (const [kisaltma, cariAdi] of Object.entries(CARI_KISALTMA)) {
+    // kelime sınırıyla ara — örn "b30" ama "b305" değil
+    const regex = new RegExp('(^|\\s)' + kisaltma.replace('.', '\\.') + '(\\s|$)', 'i');
+    if (regex.test(lo)) {
+      if (setMusteriSelect(cariAdi)) { cariFound = true; n++; break; }
+    }
+  }
+  // Sonra tam isim ara
+  if (!cariFound) {
+    for (const c of CARILER) {
+      if (lo.includes(c.toLowerCase())) {
+        if (setMusteriSelect(c)) { cariFound = true; n++; break; }
+      }
     }
   }
 
