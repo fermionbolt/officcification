@@ -611,6 +611,14 @@ let records = JSON.parse(localStorage.getItem('ceviri_v2')||'[]');
 let cariRecords = JSON.parse(localStorage.getItem('ceviri_cari')||'[]');
 let activeFilter = 'tumu';
 let activeCari = null;
+function pingSheets(url) {
+  const s = document.createElement('script');
+  s.src = url;
+  s.onerror = function() { new Image().src = url; };
+  document.head.appendChild(s);
+  setTimeout(() => { try { document.head.removeChild(s); } catch(e) {} }, 5000);
+}
+
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx6jxc03S0DsKOBPDlTQDJvhhip52hzKmnXgEKNts--stOPu3p9ybLTL1WcJ8vqM3tFbg/exec';
 
 // ── MÜŞTERİ SEÇİMİ ────────────────────────────
@@ -651,7 +659,7 @@ async function syncToSheets(rec) {
       kurye: rec.kurye||0, noter: rec.noter||0, tur: rec.tur||'',
       kaydeden: rec.kaydeden||'', not: rec.not||''
     });
-    new Image().src = SHEETS_URL + '?' + params.toString();
+    pingSheets(SHEETS_URL + '?' + params.toString());
   } catch(e) { console.warn('Sheets sync failed:', e); }
 }
 
@@ -1329,7 +1337,7 @@ async function syncEditToSheets(rec) {
       fatura: rec.fatura || '',
       not: rec.not || ''
     });
-    new Image().src = SHEETS_URL + '?' + params.toString();
+    pingSheets(SHEETS_URL + '?' + params.toString());
   } catch(e) { console.warn('Sheets update failed:', e); }
 }
 
@@ -1468,7 +1476,7 @@ function renderGundem() {
 async function syncGundemToDocs() {
   try {
     const params = new URLSearchParams({ action: 'gundem', docsId: DOCS_ID, gundem: encodeURIComponent(JSON.stringify(gundemItems)) });
-    new Image().src = SHEETS_URL + '?' + params.toString();
+    pingSheets(SHEETS_URL + '?' + params.toString());
   } catch(e) {}
 }
 
