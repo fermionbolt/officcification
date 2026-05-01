@@ -15,20 +15,20 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #060d1a;
-  --surface: #0d1e35;
-  --surface2: #112848;
-  --surface3: #163358;
-  --accent: #38bdf8;
-  --accent2: #7dd3fc;
+  --bg: #0f0f1a;
+  --surface: #1a1a2e;
+  --surface2: #22223b;
+  --surface3: #2d2d44;
+  --accent: #c084fc;
+  --accent2: #818cf8;
   --green: #34d399;
   --red: #f87171;
   --amber: #fbbf24;
-  --text: #e8f4ff;
-  --text2: #7eb8d8;
-  --text3: #4a7a99;
-  --border: rgba(56,189,248,0.12);
-  --border2: rgba(56,189,248,0.22);
+  --text: #f1f0ff;
+  --text2: #a8a4c8;
+  --text3: #6b6890;
+  --border: rgba(200,190,255,0.1);
+  --border2: rgba(200,190,255,0.18);
   --radius: 14px;
   --radius-sm: 8px;
   --font: 'DM Sans', sans-serif;
@@ -38,7 +38,7 @@
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.5;overscroll-behavior:none}
 .app{display:flex;flex-direction:column;height:100dvh;max-width:700px;margin:0 auto}
 .topbar{display:flex;align-items:center;gap:12px;padding:14px 20px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
-.logo{font-family:var(--mono);font-size:18px;font-weight:500;letter-spacing:-.02em;background:linear-gradient(135deg,#38bdf8,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo{font-family:var(--mono);font-size:18px;font-weight:500;letter-spacing:-.02em;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo span{opacity:.5}
 .topbar-right{margin-left:auto;display:flex;gap:8px}
 .icon-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 12px;cursor:pointer;color:var(--text2);font-size:13px;font-family:var(--font);transition:all .15s}
@@ -61,8 +61,8 @@ textarea.quick::placeholder{color:var(--text3)}
 .hint-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .pill{font-size:11px;font-family:var(--mono);background:var(--surface3);border:1px solid var(--border);border-radius:999px;padding:3px 10px;color:var(--text2);cursor:pointer;transition:all .15s}
 .pill:hover{background:var(--surface2);border-color:var(--border2);color:var(--text)}
-.parse-btn{width:100%;margin-top:10px;padding:12px;background:linear-gradient(135deg,rgba(56,189,248,.15),rgba(125,211,252,.15));border:1px solid rgba(56,189,248,.3);border-radius:var(--radius);color:var(--accent);font-family:var(--font);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s}
-.parse-btn:hover{background:linear-gradient(135deg,rgba(56,189,248,.25),rgba(125,211,252,.25))}
+.parse-btn{width:100%;margin-top:10px;padding:12px;background:linear-gradient(135deg,rgba(192,132,252,.15),rgba(129,140,248,.15));border:1px solid rgba(192,132,252,.3);border-radius:var(--radius);color:var(--accent);font-family:var(--font);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s}
+.parse-btn:hover{background:linear-gradient(135deg,rgba(192,132,252,.25),rgba(129,140,248,.25))}
 .parse-btn:active{transform:scale(.98)}
 .fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .field{display:flex;flex-direction:column;gap:5px}
@@ -74,7 +74,7 @@ textarea.quick::placeholder{color:var(--text3)}
 .field input:focus,.field select:focus{border-color:var(--accent)}
 .field input.hit,.field select.hit{border-color:var(--green);animation:hitpulse .5s ease}
 @keyframes hitpulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.4)}70%{box-shadow:0 0 0 6px rgba(52,211,153,0)}100%{box-shadow:none}}
-.save-btn{width:100%;padding:13px;background:linear-gradient(135deg,#0ea5e9,#38bdf8);border:none;border-radius:var(--radius);color:#fff;font-family:var(--font);font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.01em}
+.save-btn{width:100%;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:var(--radius);color:#fff;font-family:var(--font);font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.01em}
 .save-btn:hover{opacity:.9}
 .save-btn:active{transform:scale(.98)}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -92,7 +92,7 @@ textarea.quick::placeholder{color:var(--text3)}
 .rec-amount{font-size:20px;font-weight:600;font-family:var(--mono);color:var(--green);white-space:nowrap}
 .rec-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
 .tag{font-size:11px;padding:2px 9px;border-radius:999px;font-weight:500;border:1px solid transparent}
-.tag.faturali{background:rgba(56,189,248,.12);color:var(--accent);border-color:rgba(56,189,248,.2)}
+.tag.faturali{background:rgba(129,140,248,.12);color:var(--accent2);border-color:rgba(129,140,248,.2)}
 .tag.faturasiz{background:rgba(248,113,113,.12);color:var(--red);border-color:rgba(248,113,113,.2)}
 .tag.nakit{background:rgba(52,211,153,.12);color:var(--green);border-color:rgba(52,211,153,.2)}
 .tag.banka{background:rgba(251,191,36,.12);color:var(--amber);border-color:rgba(251,191,36,.2)}
@@ -107,7 +107,7 @@ textarea.quick::placeholder{color:var(--text3)}
 .filter-bar{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
 .filter-bar::-webkit-scrollbar{display:none}
 .f-btn{flex-shrink:0;font-size:12px;padding:5px 14px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .15s;font-family:var(--font)}
-.f-btn.active{background:rgba(56,189,248,.15);border-color:rgba(56,189,248,.4);color:var(--accent)}
+.f-btn.active{background:rgba(192,132,252,.15);border-color:rgba(192,132,252,.4);color:var(--accent)}
 .export-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .exp-btn{padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-family:var(--font);font-size:13px;color:var(--text);text-align:left;transition:all .15s}
 .exp-btn:hover{border-color:var(--border2);background:var(--surface3)}
@@ -170,7 +170,6 @@ textarea.quick::placeholder{color:var(--text3)}
     <div class="tab" onclick="switchTab('liste')">İşlemler</div>
     <div class="tab" onclick="switchTab('rapor')">Rapor</div>
     <div class="tab" onclick="switchTab('cari')">Cari</div>
-    <div class="tab" onclick="switchTab('gundem')">Gündem</div>
   </div>
 
   <div class="content" id="mainContent">
@@ -204,7 +203,16 @@ textarea.quick::placeholder{color:var(--text3)}
             <label>Müşteri / Kurum (Cari)</label>
             <select id="f_musteri" onchange="onMusteriChange()">
               <option value="">Seçin</option>
-              <optgroup label="Cariler" id="cariOptgroup">
+              <optgroup label="Cariler">
+                <option value="Beşiktaş 3">Beşiktaş 3</option>
+                <option value="Beşiktaş 14">Beşiktaş 14</option>
+                <option value="Beşiktaş 21">Beşiktaş 21</option>
+                <option value="Beşiktaş 25">Beşiktaş 25</option>
+                <option value="Beşiktaş 27">Beşiktaş 27</option>
+                <option value="Beşiktaş 30">Beşiktaş 30</option>
+                <option value="GLN">GLN</option>
+                <option value="Turunç Hukuk">Turunç Hukuk</option>
+                <option value="CMS Law">CMS Law</option>
               </optgroup>
               <optgroup label="Diğer">
                 <option value="__diger__">Diğer (elle gir)</option>
@@ -285,17 +293,14 @@ textarea.quick::placeholder{color:var(--text3)}
         </div>
       </div>
 
-      <div style="display:flex;gap:10px;width:100%">
-        <button class="save-btn" onclick="addRecord()" style="flex:1;min-width:0">Kaydet</button>
-        <button class="save-btn" onclick="resetForm()" style="flex:1;min-width:0;background:var(--surface2);color:var(--text2);border:1px solid var(--border2)">Sıfırla</button>
+      <div style="display:flex;gap:10px">
+        <button class="save-btn" onclick="addRecord()" style="flex:1">Kaydet</button>
+        <button class="save-btn" onclick="resetForm()" style="flex:0 0 auto;background:var(--surface2);color:var(--text2);border:1px solid var(--border2)">Sıfırla</button>
       </div>
     </div>
 
     <!-- LİSTE PANELİ -->
     <div class="panel" id="panel-liste">
-      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
-        <button onclick="loadFromSheets()" style="font-size:12px;padding:5px 14px;background:rgba(255,149,0,.15);border:1px solid rgba(255,149,0,.3);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font)">↻ Güncelle</button>
-      </div>
       <div class="filter-bar">
         <button class="f-btn active" onclick="setFilter('tumu',this)">Tümü</button>
         <button class="f-btn" onclick="setFilter('faturali',this)">Faturalı</button>
@@ -303,64 +308,21 @@ textarea.quick::placeholder{color:var(--text3)}
         <button class="f-btn" onclick="setFilter('nakit',this)">Nakit</button>
         <button class="f-btn" onclick="setFilter('banka',this)">Banka</button>
         <button class="f-btn" onclick="setFilter('bugun',this)">Bugün</button>
-        <button class="f-btn" onclick="clearAllRecords()" style="color:var(--red);border-color:rgba(248,113,113,.3)">Hepsini Temizle</button>
       </div>
       <div id="recordsContainer"></div>
     </div>
 
     <!-- RAPOR PANELİ -->
     <div class="panel" id="panel-rapor">
-
-      <!-- FİLTRELER -->
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div class="card-title" style="margin:0">Filtreler</div>
-          <button onclick="resetRaporFilters()" style="font-size:11px;padding:4px 12px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:999px;cursor:pointer;font-family:var(--font)">Sıfırla</button>
-        </div>
-        <div class="fields">
-          <div class="field">
-            <label>Başlangıç Tarihi</label>
-            <input type="date" id="r_tarih_bas" onchange="renderStats()">
-          </div>
-          <div class="field">
-            <label>Bitiş Tarihi</label>
-            <input type="date" id="r_tarih_bit" onchange="renderStats()">
-          </div>
-          <div class="field">
-            <label>Ay</label>
-            <select id="monthFilter" onchange="renderStats()">
-              <option value="all">Tüm zamanlar</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Fatura Durumu</label>
-            <select id="r_fatura" onchange="renderStats()">
-              <option value="all">Tümü</option>
-              <option value="Faturalı">Faturalı</option>
-              <option value="Faturasız">Faturasız</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Ödeme Durumu</label>
-            <select id="r_odeme" onchange="renderStats()">
-              <option value="all">Tümü</option>
-              <option value="Nakit / Elden">Nakit / Elden</option>
-              <option value="Banka / Havale">Banka / Havale</option>
-              <option value="EFT">EFT</option>
-              <option value="Dekont Geldi">Dekont Geldi</option>
-              <option value="Ödeme Gelmedi">Ödeme Gelmedi</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Cari</label>
-            <select id="r_cari" onchange="renderStats()">
-              <option value="all">Tümü</option>
-            </select>
-          </div>
+        <div class="card-title">Dönem seç</div>
+        <div class="month-row">
+          <select id="monthFilter" onchange="renderStats()">
+            <option value="all">Tüm zamanlar</option>
+          </select>
         </div>
       </div>
 
-      <!-- ÖZET -->
       <div class="card">
         <div class="card-title">Özet</div>
         <div class="stats-grid">
@@ -399,13 +361,11 @@ textarea.quick::placeholder{color:var(--text3)}
         </div>
       </div>
 
-      <!-- CARİ ÖZET -->
       <div class="card">
         <div class="card-title">Cari Özet</div>
         <div id="cariSummary" style="display:flex;flex-direction:column;gap:8px"></div>
       </div>
 
-      <!-- DIŞA AKTAR -->
       <div class="card">
         <div class="card-title">Dışa aktar</div>
         <div class="export-grid">
@@ -434,73 +394,23 @@ textarea.quick::placeholder{color:var(--text3)}
       </div>
     </div>
 
-    <!-- GÜNDEM PANELİ -->
-    <div class="panel" id="panel-gundem">
-      <div class="card">
-        <div class="card-title">Yeni Madde</div>
-        <div class="fields">
-          <div class="field full">
-            <label>Başlık</label>
-            <input type="text" id="g_baslik" placeholder="Gündem maddesi...">
-          </div>
-          <div class="field full">
-            <label>Açıklama / Not</label>
-            <textarea id="g_not" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font);font-size:14px;color:var(--text);outline:none;width:100%;resize:none;min-height:80px;" placeholder="Detay, not..."></textarea>
-          </div>
-          <div class="field">
-            <label>Kategori</label>
-            <select id="g_kategori">
-              <option value="">Seçin</option>
-              <option value="Yapılacak">Yapılacak</option>
-              <option value="Toplantı Notu">Toplantı Notu</option>
-              <option value="Acil">Acil</option>
-              <option value="Genel">Genel</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Atanan</label>
-            <select id="g_atanan">
-              <option value="">Seçin</option>
-              <option value="Eren">Eren</option>
-              <option value="Deniz">Deniz</option>
-              <option value="Sultan">Sultan</option>
-              <option value="Tüm Ekip">Tüm Ekip</option>
-            </select>
-          </div>
-        </div>
-        <button class="save-btn" onclick="addGundem()" style="margin-top:12px">Ekle</button>
-      </div>
-
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div class="card-title" style="margin:0">Gündem Listesi</div>
-          <div style="display:flex;gap:8px">
-            <button onclick="renderGundem()" style="font-size:11px;padding:4px 12px;background:rgba(255,149,0,.15);border:1px solid rgba(255,149,0,.3);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font)">↻ Güncelle</button>
-            <button onclick="clearTamamlananGundem()" style="font-size:11px;padding:4px 12px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:999px;cursor:pointer;font-family:var(--font)">🗑 Tamamlananları Sil</button>
-            <button onclick="syncGundemToDocs()" style="font-size:11px;padding:4px 12px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);color:var(--green);border-radius:999px;cursor:pointer;font-family:var(--font)">📄 Docs'a Kaydet</button>
-          </div>
-        </div>
-        <div class="filter-bar" style="margin-bottom:12px">
-          <button class="f-btn active" onclick="setGundemFilter('tumu',this)">Tümü</button>
-          <button class="f-btn" onclick="setGundemFilter('yapilacak',this)">Yapılacak</button>
-          <button class="f-btn" onclick="setGundemFilter('toplanti',this)">Toplantı</button>
-          <button class="f-btn" onclick="setGundemFilter('acil',this)">Acil</button>
-          <button class="f-btn" onclick="setGundemFilter('tamamlandi',this)">Tamamlandı</button>
-        </div>
-        <div id="gundemContainer"></div>
-      </div>
-    </div>
-
   </div>
 
-  <!-- CARİ PANELİ — content dışında, app içinde -->
-  <div class="panel" id="panel-cari" style="flex:1;overflow-y:auto;padding:16px;gap:14px">
+    <!-- CARİ PANELİ -->
+    <div class="panel" id="panel-cari" style="gap:14px">
+
     <div class="card">
       <div class="card-title">Cari Seç</div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="filter-bar" id="cariTabs" style="flex:1;min-width:0">
-        </div>
-        <button onclick="showAddCariModal()" title="Yeni Cari Ekle" style="flex-shrink:0;font-size:18px;width:32px;height:32px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:var(--accent);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">+</button>
+      <div class="filter-bar" id="cariTabs">
+        <button class="f-btn active" onclick="selectCari('Beşiktaş 3',this)">Beşiktaş 3</button>
+        <button class="f-btn" onclick="selectCari('Beşiktaş 14',this)">Beşiktaş 14</button>
+        <button class="f-btn" onclick="selectCari('Beşiktaş 21',this)">Beşiktaş 21</button>
+        <button class="f-btn" onclick="selectCari('Beşiktaş 25',this)">Beşiktaş 25</button>
+        <button class="f-btn" onclick="selectCari('Beşiktaş 27',this)">Beşiktaş 27</button>
+        <button class="f-btn" onclick="selectCari('Beşiktaş 30',this)">Beşiktaş 30</button>
+        <button class="f-btn" onclick="selectCari('GLN',this)">GLN</button>
+        <button class="f-btn" onclick="selectCari('Turunç Hukuk',this)">Turunç Hukuk</button>
+        <button class="f-btn" onclick="selectCari('CMS Law',this)">CMS Law</button>
       </div>
     </div>
 
@@ -556,29 +466,10 @@ textarea.quick::placeholder{color:var(--text3)}
       <div id="cariRecords"></div>
     </div>
   </div>
-
-</div>
-
-
-<!-- CARİ EKLE MODAL -->
-<div class="modal-overlay" id="addCariModal" style="display:none" onclick="closeAddCariModal(event)">
-  <div class="modal">
-    <div class="modal-title">
-      <span>Yeni Cari Ekle</span>
-      <button class="modal-close" onclick="closeAddCariModal()">×</button>
     </div>
-    <div class="fields">
-      <div class="field full">
-        <label>Cari Adı</label>
-        <input type="text" id="new_cari_name" placeholder="Örn: Beşiktaş 35, ABC Hukuk...">
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px">
-      <button class="save-btn" onclick="addNewCari()" style="flex:1">Ekle</button>
-      <button class="save-btn" onclick="closeAddCariModal()" style="flex:0 0 auto;background:var(--surface2);color:var(--text2);border:1px solid var(--border2)">İptal</button>
-    </div>
+
   </div>
-</div>
+
 
 <!-- EDİT MODAL -->
 <div class="modal-overlay" id="editModal" style="display:none" onclick="closeEditModal(event)">
@@ -636,18 +527,17 @@ textarea.quick::placeholder{color:var(--text3)}
 
 <script>
 // ── CARİ LİSTESİ ──────────────────────────────
-const CARILER_DEFAULT = [
+const CARILER = [
   'Beşiktaş 3','Beşiktaş 14','Beşiktaş 21','Beşiktaş 25',
   'Beşiktaş 27','Beşiktaş 30','GLN','Turunç Hukuk','CMS Law'
 ];
-let CARILER = JSON.parse(localStorage.getItem('ceviri_cariler') || JSON.stringify(CARILER_DEFAULT));
 
 // ── STATE ──────────────────────────────────────
 let records = JSON.parse(localStorage.getItem('ceviri_v2')||'[]');
 let cariRecords = JSON.parse(localStorage.getItem('ceviri_cari')||'[]');
 let activeFilter = 'tumu';
 let activeCari = null;
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwxsFr8yADuln2eJsfMPox3jg9WO1QJvSkP_3Bp_uuELPNLkaoH_8k2qL9jYGU4HhD9Xg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx6jxc03S0DsKOBPDlTQDJvhhip52hzKmnXgEKNts--stOPu3p9ybLTL1WcJ8vqM3tFbg/exec';
 
 // ── MÜŞTERİ SEÇİMİ ────────────────────────────
 function onMusteriChange() {
@@ -708,66 +598,8 @@ async function loadFromSheets() {
 // ── INIT ──────────────────────────────────────
 function init() {
   document.getElementById('f_tarih').value = today();
-  renderCariTabs();
-  renderCariDropdowns();
   populateMonths(); renderRecords(); renderStats();
   setupPullToRefresh(); loadFromSheets();
-}
-
-function renderCariTabs() {
-  const tabsEl = document.getElementById('cariTabs');
-  if (!tabsEl) return;
-  tabsEl.innerHTML = CARILER.map((c, i) =>
-    `<button class="f-btn${i===0?' active':''}" onclick="selectCari('${c}',this)">${c}</button>`
-  ).join('');
-}
-
-function renderCariDropdowns() {
-  // Kayıt Gir dropdown
-  const og = document.getElementById('cariOptgroup');
-  if (og) {
-    og.innerHTML = CARILER.map(c => `<option value="${c}">${c}</option>`).join('');
-  }
-  // Rapor dropdown
-  const rCari = document.getElementById('r_cari');
-  if (rCari) {
-    rCari.innerHTML = '<option value="all">Tümü</option>' +
-      CARILER.map(c => `<option value="${c}">${c}</option>`).join('');
-  }
-}
-
-function showAddCariModal() {
-  document.getElementById('new_cari_name').value = '';
-  document.getElementById('addCariModal').style.display = 'flex';
-}
-
-function closeAddCariModal(e) {
-  if (e && e.target !== document.getElementById('addCariModal')) return;
-  document.getElementById('addCariModal').style.display = 'none';
-}
-
-function addNewCari() {
-  const name = document.getElementById('new_cari_name').value.trim();
-  if (!name) { showToast('Cari adı gerekli!'); return; }
-  if (CARILER.includes(name)) { showToast('Bu cari zaten var!'); return; }
-  CARILER.push(name);
-  localStorage.setItem('ceviri_cariler', JSON.stringify(CARILER));
-  renderCariTabs();
-  renderCariDropdowns();
-  document.getElementById('addCariModal').style.display = 'none';
-  showToast(name + " eklendi ✓");
-  // Sheets'te de yeni sekme oluştur
-  syncNewCariToSheets(name);
-}
-
-async function syncNewCariToSheets(name) {
-  try {
-    const params = new URLSearchParams({
-      action: 'newcari',
-      cari: name
-    });
-    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
-  } catch(e) { console.warn('New cari sheets sync failed:', e); }
 }
 
 function today() { return new Date().toISOString().split('T')[0]; }
@@ -787,12 +619,13 @@ function setupPullToRefresh() {
 
 // ── TABS ──────────────────────────────────────
 function switchTab(tab) {
-  const tabNames = ['giris','liste','rapor','cari'];
+  const tabNames = ['giris','liste','rapor','cari','gundem'];
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', tabNames[i]===tab));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-'+tab).classList.add('active');
   if (tab==='liste') renderRecords();
   if (tab==='rapor') { populateMonths(); renderStats(); }
+  if (tab==='gundem') renderGundem();
 }
 
 // ── PARSE ──────────────────────────────────────
@@ -850,41 +683,11 @@ function parseInput() {
     n++;
   }
 
-  // Cari otomatik algıla — tam isim veya kısaltma
-  const CARI_KISALTMA = {
-    // Beşiktaş kısaltmaları
-    'b3': 'Beşiktaş 3', 'b.3': 'Beşiktaş 3', 'b-3': 'Beşiktaş 3', 'b 3': 'Beşiktaş 3',
-    'b14': 'Beşiktaş 14', 'b.14': 'Beşiktaş 14', 'b-14': 'Beşiktaş 14', 'b 14': 'Beşiktaş 14',
-    'b21': 'Beşiktaş 21', 'b.21': 'Beşiktaş 21', 'b-21': 'Beşiktaş 21', 'b 21': 'Beşiktaş 21',
-    'b25': 'Beşiktaş 25', 'b.25': 'Beşiktaş 25', 'b-25': 'Beşiktaş 25', 'b 25': 'Beşiktaş 25',
-    'b27': 'Beşiktaş 27', 'b.27': 'Beşiktaş 27', 'b-27': 'Beşiktaş 27', 'b 27': 'Beşiktaş 27',
-    'b28': 'Beşiktaş 28', 'b.28': 'Beşiktaş 28', 'b-28': 'Beşiktaş 28', 'b 28': 'Beşiktaş 28',
-    'b30': 'Beşiktaş 30', 'b.30': 'Beşiktaş 30', 'b-30': 'Beşiktaş 30', 'b 30': 'Beşiktaş 30',
-    // bes kısaltmaları
-    'bes3': 'Beşiktaş 3', 'bes14': 'Beşiktaş 14', 'bes21': 'Beşiktaş 21',
-    'bes25': 'Beşiktaş 25', 'bes27': 'Beşiktaş 27', 'bes28': 'Beşiktaş 28', 'bes30': 'Beşiktaş 30',
-    'bes 3': 'Beşiktaş 3', 'bes 14': 'Beşiktaş 14', 'bes 21': 'Beşiktaş 21',
-    'bes 25': 'Beşiktaş 25', 'bes 27': 'Beşiktaş 27', 'bes 28': 'Beşiktaş 28', 'bes 30': 'Beşiktaş 30',
-    // Beyoğlu kısaltmaları
-    'bey28': 'Beyoğlu 28', 'bey.28': 'Beyoğlu 28', 'bey-28': 'Beyoğlu 28', 'bey 28': 'Beyoğlu 28',
-    'by28': 'Beyoğlu 28', 'by.28': 'Beyoğlu 28', 'by-28': 'Beyoğlu 28', 'by 28': 'Beyoğlu 28',
-  };
-
+  // Cari otomatik algıla (büyük/küçük harf duyarsız)
   let cariFound = false;
-  // Önce kısaltmaları dene
-  for (const [kisaltma, cariAdi] of Object.entries(CARI_KISALTMA)) {
-    const escaped = kisaltma.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp('(?:^|\s)' + escaped + '(?:\s|$)', 'i');
-    if (regex.test(lo)) {
-      if (setMusteriSelect(cariAdi)) { cariFound = true; n++; break; }
-    }
-  }
-  // Sonra tam isim ara
-  if (!cariFound) {
-    for (const c of CARILER) {
-      if (lo.includes(c.toLowerCase())) {
-        if (setMusteriSelect(c)) { cariFound = true; n++; break; }
-      }
+  for (const c of CARILER) {
+    if (lo.includes(c.toLowerCase())) {
+      if (setMusteriSelect(c)) { cariFound = true; n++; break; }
     }
   }
 
@@ -948,13 +751,6 @@ function clearForm() {
   ['f_musteri','f_fatura','f_odeme','f_kasa','f_tur','f_kaydeden'].forEach(id => document.getElementById(id).selectedIndex = 0);
   document.getElementById('f_musteri_serbest_wrap').style.display = 'none';
   document.getElementById('f_tarih').value = today();
-}
-
-function clearAllRecords() {
-  if (!confirm('Tüm kayıtlar silinecek. Bu işlem geri alınamaz. Emin misiniz?')) return;
-  records = [];
-  save(); renderRecords(); renderStats();
-  showToast('Tüm kayıtlar silindi');
 }
 
 function deleteRecord(id) {
@@ -1032,35 +828,6 @@ function renderRecords() {
 // ── STATS ──────────────────────────────────────
 function getMonthKey(tarih) { return tarih.slice(0,7); }
 
-function getFilteredRaporRecords() {
-  const mf = document.getElementById('monthFilter')?.value || 'all';
-  const fatura = document.getElementById('r_fatura')?.value || 'all';
-  const odeme = document.getElementById('r_odeme')?.value || 'all';
-  const cari = document.getElementById('r_cari')?.value || 'all';
-  const basTarih = document.getElementById('r_tarih_bas')?.value || '';
-  const bitTarih = document.getElementById('r_tarih_bit')?.value || '';
-
-  return records.filter(r => {
-    if (mf !== 'all' && getMonthKey(r.tarih) !== mf) return false;
-    if (basTarih && r.tarih < basTarih) return false;
-    if (bitTarih && r.tarih > bitTarih) return false;
-    if (fatura !== 'all' && r.fatura !== fatura) return false;
-    if (odeme !== 'all' && r.odeme !== odeme) return false;
-    if (cari !== 'all' && r.musteri !== cari) return false;
-    return true;
-  });
-}
-
-function resetRaporFilters() {
-  document.getElementById('r_tarih_bas').value = '';
-  document.getElementById('r_tarih_bit').value = '';
-  document.getElementById('r_fatura').selectedIndex = 0;
-  document.getElementById('r_odeme').selectedIndex = 0;
-  document.getElementById('r_cari').selectedIndex = 0;
-  document.getElementById('monthFilter').value = 'all';
-  renderStats();
-}
-
 function populateMonths() {
   const sel = document.getElementById('monthFilter');
   const months = [...new Set(records.map(r => getMonthKey(r.tarih)))].sort().reverse();
@@ -1093,7 +860,8 @@ function getCariStats() {
 }
 
 function renderStats() {
-  const recs = getFilteredRaporRecords();
+  const mf = document.getElementById('monthFilter').value;
+  const recs = mf==='all' ? records : records.filter(r => getMonthKey(r.tarih)===mf);
   const gelir = recs.reduce((s,r) => s+r.tutar, 0);
   const gider = recs.reduce((s,r) => s+r.kurye+r.noter, 0);
   const kasa = recs.filter(r=>r.kasa==='Kasa').reduce((s,r)=>s+r.tutar,0);
@@ -1234,7 +1002,8 @@ function renderCariRecords() {
 
 // ── EXPORTS ───────────────────────────────────
 function getExportRecords() {
-  return getFilteredRaporRecords();
+  const mf = document.getElementById('monthFilter')?.value || 'all';
+  return mf==='all' ? records : records.filter(r => getMonthKey(r.tarih)===mf);
 }
 
 function exportCSV() {
@@ -1373,7 +1142,6 @@ function saveEditCariRecord() {
   const idx = cariRecords.findIndex(r => r.id === editingCariId);
   if (idx === -1) return;
 
-  const eskiRec = {...cariRecords[idx]};
   const updated = {
     ...cariRecords[idx],
     tarih: document.getElementById('e_tarih').value || cariRecords[idx].tarih,
@@ -1409,133 +1177,6 @@ async function syncEditToSheets(rec) {
     });
     await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
   } catch(e) { console.warn('Sheets update failed:', e); }
-}
-
-
-// ── GÜNDEM ─────────────────────────────────────
-const DOCS_ID = '1ws6dfIkixcNYvXy5rP_qWWlW-jVrVtfX8QMiO78JnFI';
-let gundemItems = JSON.parse(localStorage.getItem('ceviri_gundem') || '[]');
-let gundemFilter = 'tumu';
-
-function addGundem() {
-  const baslik = document.getElementById('g_baslik').value.trim();
-  if (!baslik) { showToast('Başlık gerekli!'); return; }
-  const item = {
-    id: Date.now(),
-    baslik,
-    not: document.getElementById('g_not').value.trim(),
-    kategori: document.getElementById('g_kategori').value || 'Genel',
-    atanan: document.getElementById('g_atanan').value || '',
-    tarih: today(),
-    tamamlandi: false
-  };
-  gundemItems.unshift(item);
-  saveGundem();
-  document.getElementById('g_baslik').value = '';
-  document.getElementById('g_not').value = '';
-  document.getElementById('g_kategori').selectedIndex = 0;
-  document.getElementById('g_atanan').selectedIndex = 0;
-  renderGundem();
-  showToast('Gündem maddesi eklendi ✓');
-  syncGundemToDocs();
-}
-
-function toggleGundemDone(id) {
-  const item = gundemItems.find(i => i.id === id);
-  if (!item) return;
-  item.tamamlandi = !item.tamamlandi;
-  saveGundem();
-  renderGundem();
-  syncGundemToDocs();
-}
-
-function deleteGundem(id) {
-  if (!confirm('Bu maddeyi silmek istiyor musunuz?')) return;
-  gundemItems = gundemItems.filter(i => i.id !== id);
-  saveGundem();
-  renderGundem();
-  showToast('Silindi');
-  syncGundemToDocs();
-}
-
-function clearTamamlananGundem() {
-  const tamamlanan = gundemItems.filter(i => i.tamamlandi).length;
-  if (!tamamlanan) { showToast('Tamamlanan madde yok'); return; }
-  if (!confirm(tamamlanan + ' tamamlanan madde silinecek. Emin misiniz?')) return;
-  gundemItems = gundemItems.filter(i => !i.tamamlandi);
-  saveGundem();
-  renderGundem();
-  syncGundemToDocs();
-  showToast('Tamamlananlar silindi');
-}
-
-function saveGundem() {
-  localStorage.setItem('ceviri_gundem', JSON.stringify(gundemItems));
-}
-
-function setGundemFilter(f, btn) {
-  gundemFilter = f;
-  document.querySelectorAll('#panel-gundem .f-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderGundem();
-}
-
-function renderGundem() {
-  const items = gundemItems.filter(i => {
-    if (gundemFilter === 'yapilacak') return i.kategori === 'Yapılacak' && !i.tamamlandi;
-    if (gundemFilter === 'toplanti') return i.kategori === 'Toplantı Notu';
-    if (gundemFilter === 'acil') return i.kategori === 'Acil' && !i.tamamlandi;
-    if (gundemFilter === 'tamamlandi') return i.tamamlandi;
-    return true;
-  });
-
-  const c = document.getElementById('gundemContainer');
-  if (!items.length) {
-    c.innerHTML = '<div class="empty"><div class="empty-icon">📋</div>Gündem boş</div>';
-    return;
-  }
-
-  const katRenk = {
-    'Yapılacak': 'rgba(255,149,0,.15);border-color:rgba(255,149,0,.3);color:var(--accent)',
-    'Toplantı Notu': 'rgba(52,211,153,.12);border-color:rgba(52,211,153,.2);color:var(--green)',
-    'Acil': 'rgba(248,113,113,.12);border-color:rgba(248,113,113,.2);color:var(--red)',
-    'Genel': 'var(--surface3);color:var(--text2)'
-  };
-
-  c.innerHTML = items.map(item => {
-    const renk = katRenk[item.kategori] || katRenk['Genel'];
-    return `<div class="record" style="margin-bottom:8px;${item.tamamlandi ? 'opacity:0.5' : ''}">
-      <div style="position:absolute;top:10px;right:10px;display:flex;gap:6px">
-        <button onclick="toggleGundemDone(${item.id})" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);color:var(--green);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:var(--font)">${item.tamamlandi ? '↩ Geri Al' : '✓ Tamam'}</button>
-        <button onclick="deleteGundem(${item.id})" style="background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;font-family:var(--font)">Sil</button>
-      </div>
-      <div class="rec-top">
-        <div class="rec-main">
-          <div class="rec-name" style="${item.tamamlandi ? 'text-decoration:line-through' : ''}">${item.baslik}</div>
-          <div class="rec-date">${item.tarih}${item.atanan ? ' · ' + item.atanan : ''}</div>
-        </div>
-      </div>
-      <div class="rec-tags">
-        <span class="tag" style="background:${renk}">${item.kategori}</span>
-      </div>
-      ${item.not ? '<div class="rec-not">' + item.not + '</div>' : ''}
-    </div>`;
-  }).join('');
-}
-
-async function syncGundemToDocs() {
-  showToast("Kaydediliyor...");
-  try {
-    const params = new URLSearchParams({
-      action: 'gundem',
-      docsId: DOCS_ID,
-      gundem: JSON.stringify(gundemItems)
-    });
-    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
-    showToast("Gündem kaydedildi ✓");
-  } catch(e) {
-    showToast('Hata: ' + e.message);
-  }
 }
 
 // ── TOAST ──────────────────────────────────────
