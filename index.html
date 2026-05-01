@@ -435,6 +435,62 @@ textarea.quick::placeholder{color:var(--text3)}
       </div>
     </div>
 
+    <!-- GÜNDEM PANELİ -->
+    <div class="panel" id="panel-gundem">
+      <div class="card">
+        <div class="card-title">Yeni Madde</div>
+        <div class="fields">
+          <div class="field full">
+            <label>Başlık</label>
+            <input type="text" id="g_baslik" placeholder="Gündem maddesi...">
+          </div>
+          <div class="field full">
+            <label>Açıklama / Not</label>
+            <textarea id="g_not" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:9px 12px;font-family:var(--font);font-size:14px;color:var(--text);outline:none;width:100%;resize:none;min-height:80px;" placeholder="Detay, not..."></textarea>
+          </div>
+          <div class="field">
+            <label>Kategori</label>
+            <select id="g_kategori">
+              <option value="">Seçin</option>
+              <option value="Yapılacak">Yapılacak</option>
+              <option value="Toplantı Notu">Toplantı Notu</option>
+              <option value="Acil">Acil</option>
+              <option value="Genel">Genel</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Atanan</label>
+            <select id="g_atanan">
+              <option value="">Seçin</option>
+              <option value="Eren">Eren</option>
+              <option value="Deniz">Deniz</option>
+              <option value="Sultan">Sultan</option>
+              <option value="Tüm Ekip">Tüm Ekip</option>
+            </select>
+          </div>
+        </div>
+        <button class="save-btn" onclick="addGundem()" style="margin-top:12px">Ekle</button>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="card-title" style="margin:0">Gündem Listesi</div>
+          <div style="display:flex;gap:8px">
+            <button onclick="renderGundem()" style="font-size:11px;padding:4px 12px;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);color:var(--accent);border-radius:999px;cursor:pointer;font-family:var(--font)">↻ Güncelle</button>
+            <button onclick="clearTamamlananGundem()" style="font-size:11px;padding:4px 12px;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red);border-radius:999px;cursor:pointer;font-family:var(--font)">🗑 Tamamlananları Sil</button>
+            <button onclick="syncGundemToDocs()" style="font-size:11px;padding:4px 12px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);color:var(--green);border-radius:999px;cursor:pointer;font-family:var(--font)">📄 Docs</button>
+          </div>
+        </div>
+        <div class="filter-bar" style="margin-bottom:12px">
+          <button class="f-btn active" onclick="setGundemFilter('tumu',this)">Tümü</button>
+          <button class="f-btn" onclick="setGundemFilter('yapilacak',this)">Yapılacak</button>
+          <button class="f-btn" onclick="setGundemFilter('toplanti',this)">Toplantı</button>
+          <button class="f-btn" onclick="setGundemFilter('acil',this)">Acil</button>
+          <button class="f-btn" onclick="setGundemFilter('tamamlandi',this)">Tamamlandı</button>
+        </div>
+        <div id="gundemContainer"></div>
+      </div>
+    </div>
+
   </div>
 
     <!-- CARİ PANELİ -->
